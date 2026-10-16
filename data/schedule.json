@@ -1,0 +1,9 @@
+{
+  "_seed": true,
+  "source": "개막 전 기사로 채운 초기 일정 — 자동 수집이 돌면 실제 일정으로 바뀝니다",
+  "games": [
+    { "gid": "seed-cup-1", "date": "2026-10-19", "time": "13:00", "kind": "cup", "series": "컵대회 A조", "home": "현대캐피탈", "away": "OK저축은행", "venue": "여수 진남체육관", "state": "scheduled" },
+    { "gid": "seed-open-1", "date": "2026-10-31", "time": "14:00", "kind": "regular", "series": "개막전 · 챔프전 리매치", "home": "대한항공", "away": "현대캐피탈", "venue": "인천 계양체육관", "state": "scheduled" },
+    { "gid": "seed-open-2", "date": "2026-11-01", "time": "", "kind": "regular", "series": "", "home": "KB손해보험", "away": "삼성화재", "venue": "평택 이충문화체육센터", "state": "scheduled" }
+  ]
+}
