@@ -111,7 +111,7 @@ function gameCard(g, opts = {}) {
   if (fin) { if (+g.sh > +g.sa) hw = "winner"; else if (+g.sa > +g.sh) aw = "winner"; }
   const sc = (v) => showScore ? esc(v) : "-";
   const mine = isMine(g.home) || isMine(g.away);
-  const neutral = g.kind === "cup" || g.kind === "allstar";
+  const neutral = g.neutral || g.kind === "cup" || g.kind === "allstar";
   const tag = [KIND_LABEL[g.kind] && g.kind !== "regular" ? KIND_LABEL[g.kind] : "", g.series || ""].filter(Boolean);
   const uniq = [...new Set(tag)].filter((t, i, a) => !(i === 0 && a[1] && a[1].includes(t)));
   let sets = "";

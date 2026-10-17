@@ -34,6 +34,9 @@ CUP_END = date(2026, 10, 25)
 REG_START = date(2026, 10, 31)
 REG_END = date(2027, 4, 2)
 PS_END = date(2027, 4, 25)
+PO_START = date(2027, 4, 8)      # 네이버 일정 기준 (준PO 4/6, PO 4/8~, 챔프전 4/14~)
+FINAL_START = date(2027, 4, 14)
+ALLSTAR = date(2027, 1, 17)
 
 TEAMS = ["대한항공", "현대캐피탈", "KB손해보험", "우리카드", "한국전력", "OK저축은행", "삼성화재"]
 CUP_GROUPS = {
@@ -124,12 +127,13 @@ def team_kr(name):
     return name or ""
 
 
-def classify(d, home, away, title=""):
-    """경기 종류(kind)와 표시용 시리즈 이름"""
-    title = title or ""
-    if home not in TEAMS or away not in TEAMS or "올스타" in title:
+def classify(d, home, away, title="", round_code=""):
+    """경기 종류(kind)와 표시용 시리즈 이름.
+    봄배구·컵대회 토너먼트는 대진 확정 전엔 팀 이름이 'A조 1위', '정규2위' 같은 자리표시로 온다."""
+    title, rc = title or "", (round_code or "").lower()
+    if "올스타" in title or "allstar" in rc or "all_star" in rc or d == ALLSTAR:
         return "allstar", "올스타전"
-    if CUP_START - timedelta(days=3) <= d <= CUP_END + timedelta(days=1) or "컵" in title:
+    if "cup" in rc or "컵" in title or CUP_START - timedelta(days=3) <= d <= CUP_END + timedelta(days=1):
         for g, mem in CUP_GROUPS.items():
             if home in mem and away in mem and d <= CUP_END - timedelta(days=2):
                 return "cup", f"컵대회 {g}조"
@@ -138,10 +142,10 @@ def classify(d, home, away, title=""):
         if d >= CUP_END - timedelta(days=1):
             return "cup", "컵대회 준결승"
         return "cup", "컵대회"
-    if d > REG_END:
-        if d < date(2027, 4, 7):
+    if d > REG_END or "post" in rc:
+        if d < PO_START:
             return "ps", "준플레이오프"
-        if d < date(2027, 4, 13):
+        if d < FINAL_START:
             return "ps", "플레이오프"
         return "ps", "챔피언결정전"
     return "regular", ""
@@ -224,12 +228,16 @@ def parse_naver(g):
     except Exception:
         return None
     dt = g.get("gameDateTime") or ""
-    tm = dt[11:16] if len(dt) >= 16 and not g.get("timeTBD") else ""
+    tbd = g.get("timeTBD") or g.get("timeTbd")
+    tm = dt[11:16] if len(dt) >= 16 and not tbd else ""
+    if tm == "00:00":
+        tm = ""
     code = str(g.get("statusCode") or "").upper()
     state = STATE_MAP.get(code, "scheduled")
     if g.get("cancel") is True:
         state = "cancel"
-    kind, series = classify(d, home, away, g.get("title") or g.get("roundName") or "")
+    kind, series = classify(d, home, away, g.get("title") or g.get("roundName") or "", g.get("roundCode") or "")
+    placeholder = home not in TEAMS or away not in TEAMS
     sh, sa = to_int(g.get("homeTeamScore")), to_int(g.get("awayTeamScore"))
     info = (g.get("statusInfo") or "").strip()
     if state == "live":
@@ -244,9 +252,11 @@ def parse_naver(g):
         "gid": str(g.get("gameId") or f"{dstr}-{home}-{away}"),
         "date": dstr, "time": tm, "kind": kind, "series": series,
         "home": home, "away": away,
-        "venue": (g.get("stadium") or "").strip() or ("여수 진남체육관" if kind in ("cup", "allstar") else VENUES.get(home, "")),
+        "venue": "" if (kind == "ps" and placeholder) else (g.get("stadium") or "").strip() or ("여수 진남체육관" if kind in ("cup", "allstar") else VENUES.get(home, "")),
         "state": state, "status": status,
     }
+    if g.get("neutralGround") or kind in ("cup", "allstar"):
+        out["neutral"] = True
     if state in ("live", "final") and sh is not None and sa is not None:
         out["sh"], out["sa"] = sh, sa
     sets = find_sets(g)
@@ -334,6 +344,8 @@ def detect_teams(text):
     return hits
 
 
+LEAGUE = re.compile(r"V리그|V-리그|프로배구|KOVO|컵대회|봄배구|챔프전|남자배구|남자부")
+NOISE = re.compile(r"유출|대출|예금|계좌|금리|주가|실적|보험금|해킹|고객|승진|협약|한국전력공사|전기요금|이상형|열애|결혼|예능|미녀|클럽 배구|생활체육|김연경|8구단|女배구|여자배구")
 WOMEN = ["흥국생명", "현대건설", "GS칼텍스", "한국도로공사", "도로공사", "정관장", "IBK기업은행", "IBK", "SOOP", "페퍼", "여자부"]
 
 
@@ -361,8 +373,10 @@ def collect_news(limit=40):
                 continue
             teams = detect_teams(title)
             women = any(w in title for w in WOMEN)
-            if not teams and (women or not re.search(r"배구|V리그|V-리그|컵대회", title)):
-                continue  # 남자부와 무관한 기사 제외
+            if NOISE.search(title) or (women and not teams):
+                continue  # 은행·전력회사 사고, 연예, 여자부 기사 제외
+            if not teams and not LEAGUE.search(title):
+                continue  # 구단 이름도 V-리그 언급도 없으면 다른 배구(해외·아마추어) 기사
             seen.add(key)
             pub = it.findtext("pubDate") or ""
             try:
