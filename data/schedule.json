@@ -11,7 +11,8 @@
    "away": "현대캐피탈",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261019824M14",
@@ -23,7 +24,8 @@
    "away": "KB손해보험",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261019824M15",
@@ -35,7 +37,8 @@
    "away": "삼성화재",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261020824M16",
@@ -47,7 +50,8 @@
    "away": "OK저축은행",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261020824M17",
@@ -59,7 +63,8 @@
    "away": "우리카드",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261020824M18",
@@ -71,7 +76,8 @@
    "away": "현대캐피탈",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261022824M19",
@@ -83,7 +89,8 @@
    "away": "삼성화재",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261022824M20",
@@ -95,7 +102,8 @@
    "away": "한국전력",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261022824M21",
@@ -107,43 +115,47 @@
    "away": "대한항공",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261024824M22",
    "date": "2026-10-24",
    "time": "13:30",
-   "kind": "allstar",
-   "series": "올스타전",
+   "kind": "cup",
+   "series": "컵대회 준결승",
    "home": "A조 1위",
    "away": "B조 2위",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261024824M23",
    "date": "2026-10-24",
    "time": "16:30",
-   "kind": "allstar",
-   "series": "올스타전",
+   "kind": "cup",
+   "series": "컵대회 준결승",
    "home": "B조 1위",
    "away": "A조 2위",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261025824M24",
    "date": "2026-10-25",
    "time": "13:30",
-   "kind": "allstar",
-   "series": "올스타전",
+   "kind": "cup",
+   "series": "컵대회 결승",
    "home": "준결승 A승",
    "away": "준결승 B승",
    "venue": "진남체육관",
    "state": "scheduled",
-   "status": ""
+   "status": "",
+   "neutral": true
   },
   {
    "gid": "20261031023M1",
@@ -1660,108 +1672,108 @@
   {
    "gid": "20270406023M254",
    "date": "2027-04-06",
-   "time": "00:00",
-   "kind": "allstar",
-   "series": "올스타전",
+   "time": "",
+   "kind": "ps",
+   "series": "준플레이오프",
    "home": "정규3위",
    "away": "정규4위",
-   "venue": "여수 진남체육관",
+   "venue": "",
    "state": "scheduled",
    "status": ""
   },
   {
    "gid": "20270408023M256",
    "date": "2027-04-08",
-   "time": "00:00",
-   "kind": "allstar",
-   "series": "올스타전",
+   "time": "",
+   "kind": "ps",
+   "series": "플레이오프",
    "home": "정규2위",
    "away": "준PO승",
-   "venue": "여수 진남체육관",
+   "venue": "",
    "state": "scheduled",
    "status": ""
   },
   {
    "gid": "20270410023M258",
    "date": "2027-04-10",
-   "time": "00:00",
-   "kind": "allstar",
-   "series": "올스타전",
+   "time": "",
+   "kind": "ps",
+   "series": "플레이오프",
    "home": "준PO승",
    "away": "정규2위",
-   "venue": "여수 진남체육관",
+   "venue": "",
    "state": "scheduled",
    "status": ""
   },
   {
    "gid": "20270412023M260",
    "date": "2027-04-12",
-   "time": "00:00",
-   "kind": "allstar",
-   "series": "올스타전",
+   "time": "",
+   "kind": "ps",
+   "series": "플레이오프",
    "home": "정규2위",
    "away": "준PO승",
-   "venue": "여수 진남체육관",
+   "venue": "",
    "state": "scheduled",
    "status": ""
   },
   {
    "gid": "20270414023M262",
    "date": "2027-04-14",
-   "time": "00:00",
-   "kind": "allstar",
-   "series": "올스타전",
+   "time": "",
+   "kind": "ps",
+   "series": "챔피언결정전",
    "home": "정규1위",
    "away": "PO승",
-   "venue": "여수 진남체육관",
+   "venue": "",
    "state": "scheduled",
    "status": ""
   },
   {
    "gid": "20270416023M264",
    "date": "2027-04-16",
-   "time": "00:00",
-   "kind": "allstar",
-   "series": "올스타전",
+   "time": "",
+   "kind": "ps",
+   "series": "챔피언결정전",
    "home": "정규1위",
    "away": "PO승",
-   "venue": "여수 진남체육관",
+   "venue": "",
    "state": "scheduled",
    "status": ""
   },
   {
    "gid": "20270418023M266",
    "date": "2027-04-18",
-   "time": "00:00",
-   "kind": "allstar",
-   "series": "올스타전",
+   "time": "",
+   "kind": "ps",
+   "series": "챔피언결정전",
    "home": "PO승",
    "away": "정규1위",
-   "venue": "여수 진남체육관",
+   "venue": "",
    "state": "scheduled",
    "status": ""
   },
   {
    "gid": "20270420023M268",
    "date": "2027-04-20",
-   "time": "00:00",
-   "kind": "allstar",
-   "series": "올스타전",
+   "time": "",
+   "kind": "ps",
+   "series": "챔피언결정전",
    "home": "PO승",
    "away": "정규1위",
-   "venue": "여수 진남체육관",
+   "venue": "",
    "state": "scheduled",
    "status": ""
   },
   {
    "gid": "20270422023M270",
    "date": "2027-04-22",
-   "time": "00:00",
-   "kind": "allstar",
-   "series": "올스타전",
+   "time": "",
+   "kind": "ps",
+   "series": "챔피언결정전",
    "home": "정규1위",
    "away": "PO승",
-   "venue": "여수 진남체육관",
+   "venue": "",
    "state": "scheduled",
    "status": ""
   }
