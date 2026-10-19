@@ -1,0 +1,115 @@
+{
+ "https://m.sports.naver.com/game/20261019824M13/relay": {
+  "status": 200,
+  "len": 2588,
+  "head": "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"/><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no\"><title>ë¤ì´ë² ì¤í¬ì¸ </title><link rel=\"shortcut icon\" type=\"image/x-icon\" sizes=\"32x32\" href=\"https://ssl.pstatic.net/static/sports/common/2025/Favicon_32.png\"><link"
+ },
+ "https://m.sports.naver.com/game/20261019824M13/lineup": {
+  "status": 200,
+  "len": 2588,
+  "head": "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"/><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no\"><title>ë¤ì´ë² ì¤í¬ì¸ </title><link rel=\"shortcut icon\" type=\"image/x-icon\" sizes=\"32x32\" href=\"https://ssl.pstatic.net/static/sports/common/2025/Favicon_32.png\"><link"
+ },
+ "https://m.sports.naver.com/game/20261019824M13/record": {
+  "status": 200,
+  "len": 2588,
+  "head": "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"/><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no\"><title>ë¤ì´ë² ì¤í¬ì¸ </title><link rel=\"shortcut icon\" type=\"image/x-icon\" sizes=\"32x32\" href=\"https://ssl.pstatic.net/static/sports/common/2025/Favicon_32.png\"><link"
+ },
+ "https://m.sports.naver.com/game/20261019824M13/preview": {
+  "status": 200,
+  "len": 2588,
+  "head": "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"/><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no\"><title>ë¤ì´ë² ì¤í¬ì¸ </title><link rel=\"shortcut icon\" type=\"image/x-icon\" sizes=\"32x32\" href=\"https://ssl.pstatic.net/static/sports/common/2025/Favicon_32.png\"><link"
+ },
+ "https://m.sports.naver.com/game/20261019824M13": {
+  "status": 200,
+  "len": 2588,
+  "head": "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"/><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no\"><title>ë¤ì´ë² ì¤í¬ì¸ </title><link rel=\"shortcut icon\" type=\"image/x-icon\" sizes=\"32x32\" href=\"https://ssl.pstatic.net/static/sports/common/2025/Favicon_32.png\"><link"
+ },
+ "_found_paths": [
+  "/schedule/games/",
+  "JS:/lineup",
+  "JS:/relay",
+  "JS:/relay/highLight",
+  "JS:/relay/superb",
+  "JS:/relayTextVideo"
+ ],
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/relay": {
+  "status": 200,
+  "len": 16585,
+  "head": "{\"code\":200,\"success\":true,\"result\":{\"textRelayData\":{\"latestSet\":4,\"lineup\":{\"gameId\":\"2026-10-19824M13\",\"leagueCode\":\"824\",\"leagueType\":\"212\",\"round\":1,\"gameNo\":13,\"set\":4,\"homePlayerCode1\":\"1000367\",\"homePlayerName1\":\"김대환\",\"homePlayerPosition1\":\"S\",\"homePlayerCode2\":\"0001995\",\"homePlayerName2\":\"김정호\",\"homePlayerPosition2\":\"OH\",\"homePlayerCode3\":\"1000645\",\"homePlayerName3\":\"페이즈\",\"homePlayerPositi"
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/relay?set=1": {
+  "status": 200,
+  "len": 61152,
+  "head": "{\"code\":200,\"success\":true,\"result\":{\"textRelayData\":{\"latestSet\":4,\"lineup\":{\"gameId\":\"2026-10-19824M13\",\"leagueCode\":\"824\",\"leagueType\":\"212\",\"round\":1,\"gameNo\":13,\"set\":1,\"homePlayerCode1\":\"0001995\",\"homePlayerName1\":\"김정호\",\"homePlayerPosition1\":\"OH\",\"homePlayerCode2\":\"1000645\",\"homePlayerName2\":\"페이즈\",\"homePlayerPosition2\":\"MB\",\"homePlayerCode3\":\"1000036\",\"homePlayerName3\":\"러셀\",\"homePlayerPositi"
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/relay?setNo=1": {
+  "status": 200,
+  "len": 16585,
+  "head": "{\"code\":200,\"success\":true,\"result\":{\"textRelayData\":{\"latestSet\":4,\"lineup\":{\"gameId\":\"2026-10-19824M13\",\"leagueCode\":\"824\",\"leagueType\":\"212\",\"round\":1,\"gameNo\":13,\"set\":4,\"homePlayerCode1\":\"1000367\",\"homePlayerName1\":\"김대환\",\"homePlayerPosition1\":\"S\",\"homePlayerCode2\":\"0001995\",\"homePlayerName2\":\"김정호\",\"homePlayerPosition2\":\"OH\",\"homePlayerCode3\":\"1000645\",\"homePlayerName3\":\"페이즈\",\"homePlayerPositi"
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/relay?inning=1": {
+  "status": 200,
+  "len": 16585,
+  "head": "{\"code\":200,\"success\":true,\"result\":{\"textRelayData\":{\"latestSet\":4,\"lineup\":{\"gameId\":\"2026-10-19824M13\",\"leagueCode\":\"824\",\"leagueType\":\"212\",\"round\":1,\"gameNo\":13,\"set\":4,\"homePlayerCode1\":\"1000367\",\"homePlayerName1\":\"김대환\",\"homePlayerPosition1\":\"S\",\"homePlayerCode2\":\"0001995\",\"homePlayerName2\":\"김정호\",\"homePlayerPosition2\":\"OH\",\"homePlayerCode3\":\"1000645\",\"homePlayerName3\":\"페이즈\",\"homePlayerPositi"
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/relays": {
+  "status": 403,
+  "len": 0,
+  "head": ""
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/text-relay": {
+  "status": 403,
+  "len": 0,
+  "head": ""
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/textRelay": {
+  "status": 403,
+  "len": 0,
+  "head": ""
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/lineup": {
+  "status": 200,
+  "len": 56,
+  "head": "{\"code\":200,\"success\":true,\"result\":{\"lineUpData\":null}}"
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/lineups": {
+  "status": 403,
+  "len": 0,
+  "head": ""
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/starting-lineup": {
+  "status": 403,
+  "len": 0,
+  "head": ""
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/record": {
+  "status": 200,
+  "len": 18103,
+  "head": "{\"code\":200,\"success\":true,\"result\":{\"recordData\":{\"topPlayer\":{\"away\":{\"SET_SUCCESS\":{\"playerId\":null,\"playerName\":null,\"position\":null,\"mcode\":null,\"cset\":0,\"point\":0,\"attack\":0,\"attackSuccess\":0,\"blocking\":0,\"blockingSuccess\":0,\"dig\":0,\"digSuccess\":0,\"serve\":0,\"serveSuccess\":0,\"toss\":0,\"tossSuccess\":0,\"receive\":0,\"receiveSuccess\":0,\"receiveFail\":0,\"defense\":0,\"error\":0,\"openAttack\":0,\"coverPlay"
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/records": {
+  "status": 403,
+  "len": 0,
+  "head": ""
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/preview": {
+  "status": 200,
+  "len": 55,
+  "head": "{\"code\":200,\"success\":true,\"result\":{\"previewData\":{}}}"
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/game-record": {
+  "status": 403,
+  "len": 0,
+  "head": ""
+ },
+ "https://api-gw.sports.naver.com/schedule/games/20261019824M13/player-record": {
+  "status": 403,
+  "len": 0,
+  "head": ""
+ },
+ "https://api-gw.sports.naver.com/schedule/games/": {
+  "status": 200,
+  "len": 5659,
+  "head": "{\"code\":200,\"success\":true,\"result\":{\"games\":[{\"gameId\":\"lpga1731731026\",\"categoryId\":\"lpga\",\"gameDate\":\"2026-10-15\",\"gameDateTime\":\"2026-10-15T23:00:00\",\"homeTeamCode\":\"\",\"homeTeamName\":\"\",\"homeTeamScore\":0,\"awayTeamCode\":\"\",\"awayTeamName\":\"\",\"awayTeamScore\":0,\"winner\":\"DRAW\",\"statusCode\":\"RESULT\",\"statusInfo\":\"종료\",\"cancel\":false,\"suspended\":false,\"reversedHomeAway\":false,\"neutralGround\":false,\"h"
+ }
+}
