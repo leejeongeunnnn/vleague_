@@ -438,3 +438,5 @@ table.rank th { line-height:1.25; }
 @media (max-width: 520px){ table.rank .opt { display:none; } }
 .standings-wrap > * { min-width: 0; }
 @media (max-width: 520px){ .form-inline .form-chip:nth-last-child(n+4){ display:none; } table.rank th, table.rank td { padding: 8px 3px; } }
+.set-line span.cur { border:1px solid rgba(239,68,68,.6); color:#fca5a5; }
+.set-line span.cur b { color:#fff; }

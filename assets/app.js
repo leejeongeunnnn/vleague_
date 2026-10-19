@@ -156,7 +156,7 @@ function gameCard(g, opts = {}) {
   let sets = "";
   if (Array.isArray(g.sets) && g.sets.length) {
     sets = `<div class="set-line">${g.sets.map((s, i) =>
-      `<span title="${i + 1}세트"><b class="${+s[1] > +s[0] ? "w" : ""}">${esc(s[1])}</b><i>:</i><b class="${+s[0] > +s[1] ? "w" : ""}">${esc(s[0])}</b></span>`).join("")}</div>`;
+      `<span title="${i + 1}세트" class="${live && i === g.sets.length - 1 ? "cur" : ""}"><b class="${+s[1] > +s[0] ? "w" : ""}">${esc(s[1])}</b><i>:</i><b class="${+s[0] > +s[1] ? "w" : ""}">${esc(s[0])}</b></span>`).join("")}</div>`;
   }
   const status = live ? (g.status || "경기 중") : fin ? (g.status || "경기 종료") : g.state === "cancel" ? (g.status || "취소") : (g.time ? `${g.time} 시작` : "시간 미정");
   return `<div class="game ${live ? "is-live" : ""} ${mine ? "is-mine" : ""}">

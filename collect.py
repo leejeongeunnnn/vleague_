@@ -203,7 +203,10 @@ def find_sets(obj):
                 walk(v, depth + 1)
 
     walk(obj)
-    return found[0] if found else None
+    if not found:
+        return None
+    sets = [p for p in found[0] if p[0] or p[1]]  # 아직 안 한 세트(0:0) 제외
+    return sets or None
 
 
 # ---------------------------------------------------------------- 네이버 일정
