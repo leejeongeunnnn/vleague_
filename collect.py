@@ -313,7 +313,9 @@ def collect_schedule():
     detail_sample_saved = os.path.exists(os.path.join(DEBUG, "naver_detail_sample.json"))
     for g in games:
         prev = old_by_id.get(g["gid"])
-        if "sets" not in g and prev and prev.get("sets") and g["state"] == "final":
+        # 이전에 '끝난 상태'로 받은 세트 점수만 재사용 (경기 중에 받은 건 미완성이라 다시 받음)
+        if "sets" not in g and prev and prev.get("sets") and g["state"] == "final" and prev.get("state") == "final" \
+                and len(prev["sets"]) == (g.get("sh") or 0) + (g.get("sa") or 0):
             g["sets"] = prev["sets"]
         if "sets" not in g and g["state"] in ("final", "live") and budget > 0:
             budget -= 1
