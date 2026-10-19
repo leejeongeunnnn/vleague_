@@ -64,6 +64,11 @@
     <section id="panel-news" class="panel"></section>
   </main>
 
+  <div id="game-modal" aria-modal="true" role="dialog">
+    <div class="gm-backdrop" onclick="closeGame()"></div>
+    <div class="gm-panel"><button class="gm-close" onclick="closeGame()" aria-label="닫기">✕</button><div id="gm-body"></div></div>
+  </div>
+
   <footer class="footer">
     데이터 출처: 네이버 스포츠 · 한국배구연맹(KOVO) · Google 뉴스 &nbsp;|&nbsp;
     GitHub Actions로 자동 수집되는 정적 대시보드

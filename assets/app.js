@@ -159,7 +159,9 @@ function gameCard(g, opts = {}) {
       `<span title="${i + 1}세트" class="${live && i === g.sets.length - 1 ? "cur" : ""}"><b class="${+s[1] > +s[0] ? "w" : ""}">${esc(s[1])}</b><i>:</i><b class="${+s[0] > +s[1] ? "w" : ""}">${esc(s[0])}</b></span>`).join("")}</div>`;
   }
   const status = live ? (g.status || "경기 중") : fin ? (g.status || "경기 종료") : g.state === "cancel" ? (g.status || "취소") : (g.time ? `${g.time} 시작` : "시간 미정");
-  return `<div class="game ${live ? "is-live" : ""} ${mine ? "is-mine" : ""}">
+  const canOpen = (live || fin) && g.gid && !String(g.gid).startsWith("seed");
+  const more = canOpen ? ` <b class="more">${live ? "문자중계 ›" : "상세 ›"}</b>` : "";
+  return `<div class="game ${live ? "is-live" : ""} ${mine ? "is-mine" : ""} ${canOpen ? "clickable" : ""}"${canOpen ? ` data-gid="${esc(g.gid)}" role="button" tabindex="0"` : ""}>
     ${(uniq.length || live || mine || opts.showDate) ? `<div class="series">${mine ? '<span class="mine-star">⭐</span> ' : ""}${live ? '<span class="live-pill">LIVE</span> ' : ""}${opts.showDate ? `<span class="g-date">${esc(dateLabel(g.date))}</span> ` : ""}${esc(uniq.join(" · "))}</div>` : ""}
     <div class="game-row">
       <span class="game-team">${dot(g.away)}${esc(g.away)}</span>
@@ -172,7 +174,7 @@ function gameCard(g, opts = {}) {
     ${sets}
     <div class="game-meta">
       <span>${esc(g.venue || "")}</span>
-      <span class="${live ? "status-live" : ""}">${esc(status)}</span>
+      <span class="${live ? "status-live" : ""}">${esc(status)}${more}</span>
     </div>
   </div>`;
 }
@@ -507,6 +509,137 @@ function updateChip() {
   else document.documentElement.style.removeProperty("--mine");
 }
 
+/* ---------- 경기 상세: 문자중계 · 세트별 선발 ---------- */
+const POS = { S: "세터", OH: "아웃사이드 히터", OP: "아포짓", MB: "미들블로커", L: "리베로" };
+const GM = { gid: null, set: null, relay: null, loading: false, newestFirst: true };
+async function openGame(gid) {
+  GM.gid = gid; GM.set = null; GM.relay = null;
+  document.body.classList.add("gm-lock");
+  document.getElementById("game-modal").classList.add("open");
+  renderGameModal();
+  if (!liveRelay(gid)) {
+    GM.loading = true; renderGameModal();
+    try {
+      const r = await fetch(`data/games/${encodeURIComponent(gid)}.json?t=${Date.now()}`, { cache: "no-store" });
+      GM.relay = r.ok ? await r.json() : null;
+    } catch (e) { GM.relay = null; }
+    GM.loading = false;
+    if (GM.gid === gid) renderGameModal();
+  }
+}
+function closeGame() {
+  GM.gid = null;
+  document.body.classList.remove("gm-lock");
+  document.getElementById("game-modal").classList.remove("open");
+}
+function liveRelay(gid) {
+  const L = DATA.live;
+  return L && L.relay && L.relay[gid] ? L.relay[gid] : null;
+}
+/* 득점 장면 문장에서 선수 이름별 득점 집계 */
+function topScorers(R, side) {
+  const cnt = {};
+  Object.values(R.sets || {}).forEach(st => (st.relay || []).forEach(e => {
+    if (e[2] !== "S" || e[1] !== (side === "home" ? 1 : 0)) return;
+    const [name, ...rest] = e[3].split(" ");
+    if (!rest.length || name === "팀득점") return;
+    const kind = /블로킹|블록킹/.test(e[3]) ? "b" : /서브/.test(e[3]) ? "s" : "a";
+    cnt[name] = cnt[name] || { n: name, t: 0, a: 0, b: 0, s: 0 }; cnt[name].t++; cnt[name][kind]++;
+  }));
+  return Object.values(cnt).sort((x, y) => y.t - x.t).slice(0, 5);
+}
+function lineupBlock(lst, team) {
+  if (!lst || !lst.length) return `<div class="hint">라인업 정보 없음</div>`;
+  const start = lst.slice(0, 6), rest = lst.slice(6);
+  const row = (p, i) => `<div class="lu-row"><span class="lu-no">${i}</span><b>${esc(p.n)}</b><span class="lu-pos">${esc(POS[p.p] || p.p)}</span></div>`;
+  return `<div class="lu-team">${dot(team)}<b>${esc(team)}</b></div>${start.map((p, i) => row(p, i + 1)).join("")}
+    ${rest.length ? `<div class="lu-sub">${rest.map(p => `${esc(p.n)} <span class="lu-pos">${esc(POS[p.p] || p.p)}</span>`).join(" · ")}</div>` : ""}`;
+}
+function relayBlock(st, g) {
+  const rel = st.relay || [];
+  if (!rel.length) return `<div class="empty">아직 중계 내용이 없어요.</div>`;
+  // 랠리별로 묶기
+  const rallies = [];
+  let cur = null;
+  rel.forEach(e => {
+    if (!cur || cur.no !== e[0]) { cur = { no: e[0], items: [] }; rallies.push(cur); }
+    cur.items.push(e);
+  });
+  let ph = 0, pa = 0;
+  rallies.forEach(r => {
+    const last = r.items[r.items.length - 1];
+    const hs = Math.max(...r.items.map(e => e[4])), as = Math.max(...r.items.map(e => e[5]));
+    r.hs = hs; r.as = as;
+    r.win = hs > ph ? "home" : as > pa ? "away" : null;
+    ph = hs; pa = as;
+    r.flag = r.items.every(e => e[2] === "F") ? last[3] : null;
+  });
+  const list = GM.newestFirst ? rallies.slice().reverse() : rallies;
+  return list.map(r => {
+    if (r.flag) return `<div class="rl-flag">${esc(r.flag === "경기종료" ? "세트 종료" : r.flag === "경기시작" ? "세트 시작" : r.flag)} · ${r.as}:${r.hs}</div>`;
+    const wteam = r.win === "home" ? g.home : r.win === "away" ? g.away : null;
+    const lines = r.items.filter(e => e[2] !== "F").map(e => {
+      const team = e[1] === 1 ? g.home : e[1] === 0 ? g.away : "";
+      if (e[2] === "I" || e[2] === "O") return `<div class="rl-line chg">🔄 ${esc(team)} 교체 ${e[2] === "I" ? "IN" : "OUT"}&nbsp;<b>${esc(e[3])}</b></div>`;
+      const cls = e[2] === "S" ? "pt" : e[2] === "T" ? "team" : "";
+      return `<div class="rl-line ${cls}"><span class="dot sm" style="background:${colorOf(team)}"></span>${esc(e[3])}</div>`;
+    }).join("");
+    if (!lines) return "";
+    return `<div class="rl-rally" style="${wteam ? `border-left-color:${colorOf(wteam)}` : ""}">
+      <div class="rl-head">${wteam ? `${dot(wteam)}<b>${esc(wteam)} 득점</b>` : `<b>랠리 ${r.no}</b>`}<span class="rl-score">${esc(g.away)} <b>${r.as}</b> : <b>${r.hs}</b> ${esc(g.home)}</span></div>
+      ${lines}</div>`;
+  }).join("");
+}
+function renderGameModal() {
+  const body = document.getElementById("gm-body");
+  if (!GM.gid || !body) return;
+  const g = allGames().find(x => x.gid === GM.gid);
+  if (!g) { body.innerHTML = emptyBox("경기 정보를 찾을 수 없어요."); return; }
+  const R = liveRelay(g.gid) || GM.relay;
+  const live = g.state === "live";
+  const sets = R && R.sets ? Object.keys(R.sets).map(Number).sort((a, b) => a - b) : [];
+  if (GM.set == null || !sets.includes(GM.set)) GM.set = sets.length ? sets[sets.length - 1] : null;
+  const st = GM.set != null ? R.sets[String(GM.set)] : null;
+  const setScore = (Array.isArray(g.sets) ? g.sets : []).map((s, i) => `<th>${i + 1}세트</th>`).join("");
+  let html = `<div class="gm-head">
+      <div class="gm-meta">${esc(dateLabel(g.date))} ${esc(g.time || "")} · ${esc(g.venue || "")} · ${esc(g.series || KIND_LABEL[g.kind] || "")}</div>
+      <div class="gm-score">
+        <div class="gm-t ${+g.sa > +g.sh ? "win" : ""}">${dot(g.away)}${esc(g.away)}<small>원정</small></div>
+        <b>${g.sa ?? "-"}<i>:</i>${g.sh ?? "-"}</b>
+        <div class="gm-t ${+g.sh > +g.sa ? "win" : ""}">${dot(g.home)}${esc(g.home)}<small>${g.neutral ? "&nbsp;" : "홈"}</small></div>
+      </div>
+      <div class="td-status ${live ? "on" : ""}">${live ? `<span class="live-dot"></span> ${esc(g.status || "경기 중")} · 1분마다 갱신` : esc(g.status || "")}</div>
+    </div>`;
+  if (Array.isArray(g.sets) && g.sets.length) {
+    html += `<table class="gm-line"><thead><tr><th></th>${setScore}<th>세트</th></tr></thead><tbody>
+      <tr><td class="team">${dot(g.away)}${esc(g.away)}</td>${g.sets.map(s => `<td class="${+s[1] > +s[0] ? "scored" : ""}">${s[1]}</td>`).join("")}<td class="tot">${g.sa ?? "-"}</td></tr>
+      <tr><td class="team">${dot(g.home)}${esc(g.home)}</td>${g.sets.map(s => `<td class="${+s[0] > +s[1] ? "scored" : ""}">${s[0]}</td>`).join("")}<td class="tot">${g.sh ?? "-"}</td></tr>
+    </tbody></table>`;
+  }
+  if (GM.loading) html += `<div class="empty">불러오는 중...</div>`;
+  else if (!R || !sets.length) {
+    html += emptyBox(live ? "중계 데이터를 기다리는 중이에요. 1~2분 뒤 자동으로 나타나요." : "이 경기의 문자중계 기록이 아직 없어요. (끝난 경기는 수집 주기에 따라 몇 시간 안에 저장돼요)");
+  } else {
+    // 득점 TOP
+    const ta = topScorers(R, "away"), th = topScorers(R, "home");
+    if (ta.length || th.length) {
+      const blk = (lst, team) => `<div class="card gm-card"><div class="mt-ph">${dot(team)}${esc(team)} 득점</div>${lst.map(p =>
+        `<div class="mt-pl"><span>${esc(p.n)}</span><span class="num"><b>${p.t}점</b> <small>공격 ${p.a} · 블로킹 ${p.b} · 서브 ${p.s}</small></span></div>`).join("") || '<div class="hint">-</div>'}</div>`;
+      html += `<div class="gm-two">${blk(ta, g.away)}${blk(th, g.home)}</div><p class="hint" style="margin-top:6px">문자중계 기준 집계 (상대 범실 득점 제외)</p>`;
+    }
+    html += `<div class="stage-tabs td-tabs">${sets.map(n => `<button class="stage-chip ${n === GM.set ? "active" : ""}" data-gs="${n}">${n}세트${live && n === sets[sets.length - 1] ? " ●" : ""}</button>`).join("")}</div>`;
+    html += `<div class="sched-sub">📋 ${GM.set}세트 선발 라인업</div>
+      <div class="gm-two"><div class="card gm-card">${lineupBlock(st.lineup && st.lineup.away, g.away)}</div><div class="card gm-card">${lineupBlock(st.lineup && st.lineup.home, g.home)}</div></div>
+      <p class="hint" style="margin-top:6px">1~6번 = 코트에 선 6명 (서브 순서), 아래 = 리베로·교체 명단</p>`;
+    html += `<div class="sched-sub">🎙️ ${GM.set}세트 문자중계 <button class="stage-chip" data-gord="1" style="margin-left:auto">${GM.newestFirst ? "최신순" : "처음부터"}</button></div>
+      <div class="rl-list">${relayBlock(st, g)}</div>`;
+  }
+  body.innerHTML = html;
+  body.querySelectorAll("[data-gs]").forEach(b => b.onclick = () => { GM.set = +b.dataset.gs; renderGameModal(); });
+  const ob = body.querySelector("[data-gord]");
+  if (ob) ob.onclick = () => { GM.newestFirst = !GM.newestFirst; renderGameModal(); };
+}
+
 /* ---------- 탭 · 전체 렌더 ---------- */
 const RENDER = { myteam: renderMyTeam, schedule: renderSchedule, standings: renderStandings, spring: renderSpring, players: renderPlayers, arenas: renderArenas, teams: renderTeams, news: renderNews };
 let CUR_TAB = "schedule";
@@ -522,6 +655,7 @@ function renderAll() {
   updateChip();
   Object.entries(RENDER).forEach(([k, fn]) => { if (k !== "arenas") { try { fn(); } catch (e) { console.error(k, e); document.getElementById("panel-" + k).innerHTML = emptyBox("이 탭을 그리다 오류가 났어요: " + e.message); } } });
   if (CUR_TAB === "arenas") renderArenas();
+  if (GM.gid) renderGameModal();
   const m = DATA.meta || {};
   document.getElementById("updated-at").textContent = `갱신: ${m.updated_at_kst || "—"}`;
 }
@@ -540,6 +674,14 @@ function scheduleRefresh() {
   loadMyTeam();
   document.querySelectorAll(".tab").forEach(t => t.onclick = () => showTab(t.dataset.tab));
   document.getElementById("myteam-chip").onclick = () => showTab("myteam");
+  document.addEventListener("click", (e) => {
+    const c = e.target.closest(".game.clickable[data-gid]");
+    if (c) openGame(c.dataset.gid);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeGame();
+    if (e.key === "Enter" && e.target.matches && e.target.matches(".game.clickable[data-gid]")) openGame(e.target.dataset.gid);
+  });
   await loadAll();
   renderAll();
   const h = (location.hash || "").slice(1);

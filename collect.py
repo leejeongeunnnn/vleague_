@@ -324,6 +324,13 @@ def collect_schedule():
                 debug_dump("naver_detail_sample.json", raw)
                 detail_sample_saved = True
 
+    try:
+        n = save_finished_relays(games)
+        if n:
+            print(f"[OK] 지난 경기 문자중계 {n}경기 저장")
+    except Exception as e:  # noqa: BLE001
+        print("[WARN] 문자중계 저장 실패:", e)
+
     uniq = {g["gid"]: g for g in games}
     games = sorted(uniq.values(), key=lambda g: (g["date"], g["time"] or "99", g["home"]))
     with_sets = sum(1 for g in games if g.get("sets"))
@@ -400,6 +407,83 @@ def collect_news(limit=40):
 
 
 # ---------------------------------------------------------------- 실행
+# ---------------------------------------------------------------- 문자중계 · 세트별 선발
+RELAY_TYPE = {"SCORE": "S", "P_IN": "I", "P_OUT": "O", "GAME_FLAG": "F"}
+
+
+def fetch_relay_set(gid, n=None):
+    js = get_json(f"{NAVER}/schedule/games/{gid}/relay", {"set": n} if n else None, tries=2)
+    return ((js or {}).get("result") or {}).get("textRelayData")
+
+
+def compact_set(d):
+    """네이버 세트 중계 → 작게 줄인 형태
+    lineup: {home:[{n,p}], away:[...]}  (1~6번 = 선발, 7번~ = 리베로·교체)
+    relay : [[랠리, 홈팀여부(1/0), 종류, 문장, 홈점수, 원정점수], ...]  오래된 순
+            종류 S=득점 장면, T=팀 득실점, X=일반, I=교체 투입, O=교체 아웃, F=경기 시작/종료"""
+    lu = d.get("lineup") or {}
+    lineup = {}
+    for side in ("home", "away"):
+        lst = []
+        for i in range(1, 15):
+            name = lu.get(f"{side}PlayerName{i}")
+            if not name:
+                continue
+            lst.append({"n": name, "p": lu.get(f"{side}PlayerPosition{i}") or ""})
+        lineup[side] = lst
+    rel = []
+    for t in sorted(d.get("textRelays") or [], key=lambda t: (t.get("page", 0), t.get("index", 0))):
+        typ = RELAY_TYPE.get(t.get("textType"), "T" if t.get("teamAction") else "X")
+        home = t.get("home")
+        rel.append([t.get("page", 0), 1 if home else 0 if home is False else None, typ,
+                    (t.get("text") or "").strip(), t.get("homeScore", 0), t.get("awayScore", 0)])
+    return {"lineup": lineup, "relay": rel}
+
+
+def fetch_game_relay(gid, prev=None, final=False):
+    """경기 전체 문자중계. 이미 받은 '끝난 세트'는 prev 에서 재사용."""
+    latest_d = fetch_relay_set(gid)
+    if not latest_d:
+        return prev
+    latest = int(latest_d.get("latestSet") or 1)
+    sets = dict((prev or {}).get("sets") or {})
+    for n in range(1, latest + 1):
+        key = str(n)
+        if n == latest:
+            sets[key] = compact_set(latest_d if int((latest_d.get("lineup") or {}).get("set") or latest) == n
+                                    else fetch_relay_set(gid, n) or {})
+        elif key not in sets or not (prev or {}).get("done_sets", {}).get(key):
+            d = fetch_relay_set(gid, n)
+            if d:
+                sets[key] = compact_set(d)
+    return {"gid": gid, "latest": latest, "sets": sets, "final": final,
+            "done_sets": {str(n): True for n in range(1, latest + (1 if final else 0))}}
+
+
+def save_finished_relays(games, budget=8):
+    """끝난 경기 문자중계를 data/games/<gid>.json 에 한 번만 저장 (지난 경기 상세용)."""
+    gdir = os.path.join(DATA, "games")
+    os.makedirs(gdir, exist_ok=True)
+    saved = 0
+    for g in sorted(games, key=lambda x: x["date"], reverse=True):
+        if g["state"] != "final" or budget <= 0:
+            continue
+        path = os.path.join(gdir, f"{g['gid']}.json")
+        if os.path.exists(path):
+            continue
+        budget -= 1
+        try:
+            r = fetch_game_relay(g["gid"], final=True)
+        except Exception as e:  # noqa: BLE001
+            print("[WARN] relay", g["gid"], e)
+            continue
+        if r and r.get("sets"):
+            r.pop("done_sets", None)
+            save(f"games/{g['gid']}.json", r)
+            saved += 1
+    return saved
+
+
 # ---------------------------------------------------------------- 실시간 (경기 중)
 def run_live():
     """오늘 경기만 받아 data/live.json 에 쓴다. 마지막 줄에 CONTINUE / STOP 출력."""
@@ -423,12 +507,29 @@ def run_live():
             if p["state"] == "live" and sample is None:
                 sample = {"list": g, "detail": det}
         games.append(p)
-    out = {"date": today.isoformat(), "updated_at": now.strftime("%Y-%m-%d %H:%M:%S"), "games": games}
+    # 문자중계: 진행 중 경기는 매번, 오늘 끝난 경기는 한 번 더 받아 마무리
+    cache = load("live_relay_cache.json", {}) or {}
+    if cache.get("date") != today.isoformat():
+        cache = {"date": today.isoformat(), "games": {}}
+    for p in games:
+        prev = cache["games"].get(p["gid"])
+        if p["state"] == "live" or (p["state"] == "final" and not (prev or {}).get("final")):
+            try:
+                r = fetch_game_relay(p["gid"], prev, final=p["state"] == "final")
+                if r:
+                    cache["games"][p["gid"]] = r
+            except Exception as e:  # noqa: BLE001
+                print("[WARN] relay", p["gid"], e)
+    save("live_relay_cache.json", cache)
+    relay = {gid: {k: v for k, v in r.items() if k != "done_sets"} for gid, r in cache["games"].items()}
+    out = {"date": today.isoformat(), "updated_at": now.strftime("%Y-%m-%d %H:%M:%S"), "games": games, "relay": relay}
     if sample:
         out["_sample"] = sample  # 진행 중 응답 구조 확인용
     save("live.json", out)
     for g in games:
-        print(f"  {g['time']} {g['away']} {g.get('sa', '-')}:{g.get('sh', '-')} {g['home']} [{g['state']}] {g.get('status', '')} sets={g.get('sets')}")
+        r = relay.get(g["gid"]) or {}
+        n = sum(len(x.get("relay", [])) for x in (r.get("sets") or {}).values())
+        print(f"  {g['time']} {g['away']} {g.get('sa', '-')}:{g.get('sh', '-')} {g['home']} [{g['state']}] {g.get('status', '')} sets={g.get('sets')} relay={n}")
 
     pending = [g for g in games if g["state"] not in ("final", "cancel")]
     if not pending:
