@@ -47,11 +47,11 @@
    "home": "한국전력",
    "away": "KB손해보험",
    "venue": "진남체육관",
-   "state": "live",
-   "status": "2세트",
+   "state": "final",
+   "status": "경기 종료",
    "neutral": true,
-   "sh": 1,
-   "sa": 0,
+   "sh": 3,
+   "sa": 1,
    "sets": [
     [
      25,
