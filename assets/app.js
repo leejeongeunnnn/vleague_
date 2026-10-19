@@ -30,6 +30,45 @@ async function loadAll() {
       DATA[f] = res.ok ? await res.json() : null;
     } catch (e) { DATA[f] = null; }
   }));
+  await loadLive();
+}
+
+/* ---------- 실시간 점수 (live 브랜치의 live.json) ----------
+   경기 중엔 Actions가 1분마다 live 브랜치에 live.json 을 올린다.
+   GitHub Pages 를 다시 빌드하지 않으므로 빠르다. API 한도(시간당 60회)를 넘으면 raw 주소로 대체. */
+const FALLBACK_REPO = "leejeongeunnnn/vleague_";
+function repoSlug() {
+  const h = location.hostname;
+  if (h.endsWith(".github.io")) {
+    const repo = location.pathname.split("/").filter(Boolean)[0];
+    if (repo) return `${h.split(".")[0]}/${repo}`;
+  }
+  return FALLBACK_REPO;
+}
+async function fetchLive() {
+  const slug = repoSlug();
+  const tries = [
+    () => fetch(`https://api.github.com/repos/${slug}/contents/live.json?ref=live`, { cache: "no-store", headers: { Accept: "application/vnd.github.raw+json" } }),
+    () => fetch(`https://raw.githubusercontent.com/${slug}/live/live.json?t=${Date.now()}`, { cache: "no-store" }),
+  ];
+  for (const t of tries) {
+    try { const r = await t(); if (r.ok) return await r.json(); } catch (e) { /* 다음 방법 */ }
+  }
+  return null;
+}
+async function loadLive() {
+  const L = await fetchLive();
+  DATA.live = L;
+  if (!L || L.date !== todayStr() || !Array.isArray(L.games) || !DATA.schedule) return;
+  const games = (DATA.schedule.games || []).slice();
+  const idx = Object.fromEntries(games.map((g, i) => [g.gid, i]));
+  L.games.forEach(g => {
+    if (g.gid in idx) {
+      const old = games[idx[g.gid]];
+      games[idx[g.gid]] = { ...old, ...g, sets: g.sets || old.sets };
+    } else games.push(g);
+  });
+  DATA.schedule = { ...DATA.schedule, games };
 }
 
 /* ---------- 유틸 ---------- */
@@ -163,7 +202,7 @@ function renderSchedule() {
   const todayN = allGames().filter(g => g.date === today).length;
   if (todayN) {
     html += `<div class="live-banner ${liveN ? "on" : ""}">${liveN ? '<span class="live-dot"></span> 지금 ' + liveN + "경기 진행 중" : "오늘 " + todayN + "경기"}
-      <span class="lb-time">갱신 ${esc((DATA.meta || {}).updated_at_kst || "-")} · 경기 시간대엔 약 10분마다 자동 갱신</span></div>`;
+      <span class="lb-time">${DATA.live && DATA.live.date === today ? `실시간 ${esc(DATA.live.updated_at.slice(11, 16))} 기준` : `갱신 ${esc((DATA.meta || {}).updated_at_kst || "-")}`} · 경기 중엔 1~2분마다 자동 갱신</span></div>`;
   }
 
   html += `<div class="stage-tabs">${[["all", "전체"], ["regular", "정규리그"], ["cup", "컵대회"], ["ps", "봄배구"]].map(([k, l]) =>
@@ -492,9 +531,9 @@ function scheduleRefresh() {
   setInterval(async () => {
     if (document.hidden) return;
     const today = todayStr();
-    if (!allGames().some(g => g.date === today && g.state !== "final")) return;
+    if (!allGames().some(g => g.date === today && g.state !== "final" && g.state !== "cancel")) return;
     await loadAll(); renderAll();
-  }, 3 * 60 * 1000);
+  }, 75 * 1000);
 }
 
 (async function init() {

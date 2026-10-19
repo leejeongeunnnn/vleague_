@@ -397,8 +397,58 @@ def collect_news(limit=40):
 
 
 # ---------------------------------------------------------------- 실행
+# ---------------------------------------------------------------- 실시간 (경기 중)
+def run_live():
+    """오늘 경기만 받아 data/live.json 에 쓴다. 마지막 줄에 CONTINUE / STOP 출력."""
+    now = now_kst()
+    today = now.date()
+    try:
+        raw = naver_games(today, today)
+    except Exception as e:  # noqa: BLE001
+        print("[ERROR] live:", e)
+        print("CONTINUE")
+        return
+    games, sample = [], None
+    for g in raw:
+        p = parse_naver(g)
+        if not p:
+            continue
+        if p["state"] in ("live", "final") and "sets" not in p:
+            s, det = naver_detail_sets(p["gid"])
+            if s:
+                p["sets"] = s
+            if p["state"] == "live" and sample is None:
+                sample = {"list": g, "detail": det}
+        games.append(p)
+    out = {"date": today.isoformat(), "updated_at": now.strftime("%Y-%m-%d %H:%M:%S"), "games": games}
+    if sample:
+        out["_sample"] = sample  # 진행 중 응답 구조 확인용
+    save("live.json", out)
+    for g in games:
+        print(f"  {g['time']} {g['away']} {g.get('sa', '-')}:{g.get('sh', '-')} {g['home']} [{g['state']}] {g.get('status', '')} sets={g.get('sets')}")
+
+    pending = [g for g in games if g["state"] not in ("final", "cancel")]
+    if not pending:
+        print("STOP")
+        return
+    if any(g["state"] == "live" for g in pending):
+        print("CONTINUE")
+        return
+    # 아직 시작 전: 40분 안에 시작하는 경기가 있으면 계속, 아니면 다음 예약 실행에 맡김
+    soon = False
+    for g in pending:
+        if not g["time"]:
+            soon = True
+            continue
+        start = datetime.fromisoformat(f"{g['date']}T{g['time']}:00").replace(tzinfo=KST)
+        if start - now <= timedelta(minutes=40):
+            soon = True
+    print("CONTINUE" if soon else "STOP")
+
+
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--live", action="store_true", help="오늘 경기 실시간 점수만 수집 (live.json)")
     ap.add_argument("--fixture", help="네이버 응답 대신 쓸 JSON 파일 (로컬 테스트용)")
     ap.add_argument("--skip-news", action="store_true")
     args = ap.parse_args()
@@ -408,6 +458,10 @@ def main():
         fx = json.load(open(args.fixture, encoding="utf-8"))
         naver_games = lambda d1, d2: [g for g in fx if d1.isoformat() <= g["gameDate"] <= d2.isoformat()]  # noqa: E731
         naver_detail_sets = lambda gid: (None, None)  # noqa: E731
+
+    if args.live:
+        run_live()
+        return
 
     changed = False
     changed |= bool(collect_schedule())

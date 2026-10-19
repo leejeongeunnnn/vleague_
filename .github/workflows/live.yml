@@ -1,0 +1,63 @@
+name: V리그 실시간 점수
+
+# 경기 시간대에 켜져서 1분 간격으로 오늘 경기 점수를 수집한다.
+# 결과(live.json)는 Pages 를 다시 빌드하지 않도록 별도 'live' 브랜치에 올리고,
+# 사이트는 그 파일을 75초마다 읽어 화면을 갱신한다.
+on:
+  schedule:
+    # UTC 기준 (한국시간 = UTC+9). 예약이 자주 빠지므로 15분 간격으로 여러 번 걸어 둔다.
+    # 이미 돌고 있으면 대기하고, 경기가 없거나 한참 뒤면 바로 끝나므로 중복돼도 문제없음.
+    - cron: "5,20,35,50 3-12 * * *"   # 한국시간 12:05 ~ 21:50
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vleague-live
+  cancel-in-progress: false
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      INTERVAL_SEC: "60"       # 수집 간격(초)
+      MAX_MINUTES: "330"       # 한 번 켜지면 최대 실행 시간(분)
+      HEARTBEAT_SEC: "600"     # 점수 변화가 없어도 이 간격마다 갱신 시각을 올림
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: 실시간 수집 루프
+        env:
+          PUSH_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+        run: |
+          publish() {
+            rm -rf /tmp/pub && mkdir -p /tmp/pub && cp data/live.json /tmp/pub/
+            cd /tmp/pub
+            git init -q -b live
+            git -c user.name="github-actions[bot]" -c user.email="github-actions[bot]@users.noreply.github.com" add live.json
+            git -c user.name="github-actions[bot]" -c user.email="github-actions[bot]@users.noreply.github.com" \
+                commit -q -m "live: $(date -u +'%H:%M:%S UTC')"
+            git push -q -f "$PUSH_URL" live:live || echo "[WARN] push 실패, 다음 회차에 재시도"
+            cd - >/dev/null
+          }
+
+          end=$(( SECONDS + MAX_MINUTES * 60 ))
+          last_hash=""; last_pub=0
+          while [ $SECONDS -lt $end ]; do
+            out=$(python collect.py --live 2>&1) || true
+            echo "$out" | tail -5
+            decision=$(echo "$out" | tail -1)
+            if [ -f data/live.json ]; then
+              hash=$(python -c "import json,hashlib;d=json.load(open('data/live.json'));d.pop('updated_at',None);d.pop('_sample',None);print(hashlib.md5(json.dumps(d,sort_keys=True).encode()).hexdigest())" 2>/dev/null || echo x)
+              if [ "$hash" != "$last_hash" ] || [ $(( SECONDS - last_pub )) -ge $HEARTBEAT_SEC ] || [ "$decision" = "STOP" ]; then
+                publish; last_hash="$hash"; last_pub=$SECONDS; echo "→ 게시"
+              fi
+            fi
+            if [ "$decision" = "STOP" ]; then echo "종료: 지금 지켜볼 경기가 없습니다."; break; fi
+            sleep "$INTERVAL_SEC"
+          done

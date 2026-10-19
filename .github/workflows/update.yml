@@ -30,6 +30,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          rm -f data/live.json   # 실시간 파일은 live 브랜치 전용
           git add data/
           if git diff --staged --quiet; then echo "변경 없음"; exit 0; fi
           git commit -m "chore: V리그 데이터 자동 갱신 ($(date -u +'%Y-%m-%d %H:%M UTC'))"
