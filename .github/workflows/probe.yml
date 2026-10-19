@@ -15,8 +15,7 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install requests
       - run: |
-          python tools/probe.py 20261019824M13 || true
-          python tools/probe.py 20261019824M14 > /dev/null 2>&1 || true
+          python tools/probe.py 20261019824M13 || true   # 진행/종료된 첫 경기 (2차)
       - name: probe 브랜치에 저장
         env:
           PUSH_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
