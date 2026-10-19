@@ -10,22 +10,58 @@
    "home": "OK저축은행",
    "away": "현대캐피탈",
    "venue": "진남체육관",
-   "state": "scheduled",
-   "status": "",
-   "neutral": true
+   "state": "final",
+   "status": "경기 종료",
+   "neutral": true,
+   "sh": 2,
+   "sa": 3,
+   "sets": [
+    [
+     22,
+     25
+    ],
+    [
+     25,
+     17
+    ],
+    [
+     20,
+     25
+    ],
+    [
+     25,
+     16
+    ],
+    [
+     10,
+     15
+    ]
+   ]
   },
   {
    "gid": "20261019824M14",
    "date": "2026-10-19",
-   "time": "15:30",
+   "time": "16:00",
    "kind": "cup",
    "series": "컵대회 B조",
    "home": "한국전력",
    "away": "KB손해보험",
    "venue": "진남체육관",
-   "state": "scheduled",
-   "status": "",
-   "neutral": true
+   "state": "live",
+   "status": "2세트",
+   "neutral": true,
+   "sh": 1,
+   "sa": 0,
+   "sets": [
+    [
+     25,
+     22
+    ],
+    [
+     21,
+     19
+    ]
+   ]
   },
   {
    "gid": "20261019824M15",
