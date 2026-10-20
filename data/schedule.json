@@ -113,34 +113,58 @@
    "home": "대한항공",
    "away": "OK저축은행",
    "venue": "진남체육관",
-   "state": "live",
-   "status": "2세트",
+   "state": "final",
+   "status": "경기 종료",
    "neutral": true,
-   "sh": 1,
-   "sa": 0,
+   "sh": 3,
+   "sa": 1,
    "sets": [
     [
      25,
      20
     ],
     [
-     15,
-     24
+     16,
+     25
+    ],
+    [
+     25,
+     20
+    ],
+    [
+     25,
+     20
     ]
    ]
   },
   {
    "gid": "20261020824M17",
    "date": "2026-10-20",
-   "time": "15:30",
+   "time": "15:45",
    "kind": "cup",
    "series": "컵대회 B조",
    "home": "KB손해보험",
    "away": "우리카드",
    "venue": "진남체육관",
-   "state": "scheduled",
-   "status": "",
-   "neutral": true
+   "state": "final",
+   "status": "경기 종료",
+   "neutral": true,
+   "sh": 0,
+   "sa": 3,
+   "sets": [
+    [
+     23,
+     25
+    ],
+    [
+     21,
+     25
+    ],
+    [
+     21,
+     25
+    ]
+   ]
   },
   {
    "gid": "20261020824M18",
