@@ -175,9 +175,11 @@
    "home": "삼성화재",
    "away": "현대캐피탈",
    "venue": "진남체육관",
-   "state": "scheduled",
-   "status": "",
-   "neutral": true
+   "state": "live",
+   "status": "1세트",
+   "neutral": true,
+   "sh": 0,
+   "sa": 0
   },
   {
    "gid": "20261022824M19",
