@@ -113,9 +113,21 @@
    "home": "대한항공",
    "away": "OK저축은행",
    "venue": "진남체육관",
-   "state": "scheduled",
-   "status": "",
-   "neutral": true
+   "state": "live",
+   "status": "2세트",
+   "neutral": true,
+   "sh": 1,
+   "sa": 0,
+   "sets": [
+    [
+     25,
+     20
+    ],
+    [
+     15,
+     24
+    ]
+   ]
   },
   {
    "gid": "20261020824M17",
