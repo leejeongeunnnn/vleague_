@@ -278,15 +278,23 @@
    "home": "현대캐피탈",
    "away": "대한항공",
    "venue": "진남체육관",
-   "state": "live",
-   "status": "1세트",
+   "state": "final",
+   "status": "경기 종료",
    "neutral": true,
    "sh": 0,
-   "sa": 0,
+   "sa": 3,
    "sets": [
     [
-     13,
-     15
+     21,
+     25
+    ],
+    [
+     19,
+     25
+    ],
+    [
+     20,
+     25
     ]
    ]
   },
@@ -296,8 +304,8 @@
    "time": "13:30",
    "kind": "cup",
    "series": "컵대회 준결승",
-   "home": "A조 1위",
-   "away": "B조 2위",
+   "home": "대한항공",
+   "away": "우리카드",
    "venue": "진남체육관",
    "state": "scheduled",
    "status": "",
@@ -309,8 +317,8 @@
    "time": "16:30",
    "kind": "cup",
    "series": "컵대회 준결승",
-   "home": "B조 1위",
-   "away": "A조 2위",
+   "home": "한국전력",
+   "away": "현대캐피탈",
    "venue": "진남체육관",
    "state": "scheduled",
    "status": "",
