@@ -204,9 +204,21 @@
    "home": "OK저축은행",
    "away": "삼성화재",
    "venue": "진남체육관",
-   "state": "scheduled",
-   "status": "",
-   "neutral": true
+   "state": "live",
+   "status": "2세트",
+   "neutral": true,
+   "sh": 0,
+   "sa": 1,
+   "sets": [
+    [
+     23,
+     25
+    ],
+    [
+     19,
+     20
+    ]
+   ]
   },
   {
    "gid": "20261022824M20",
