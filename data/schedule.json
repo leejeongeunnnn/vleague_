@@ -307,9 +307,25 @@
    "home": "대한항공",
    "away": "우리카드",
    "venue": "진남체육관",
-   "state": "scheduled",
-   "status": "",
-   "neutral": true
+   "state": "final",
+   "status": "경기 종료",
+   "neutral": true,
+   "sh": 3,
+   "sa": 0,
+   "sets": [
+    [
+     25,
+     22
+    ],
+    [
+     37,
+     35
+    ],
+    [
+     25,
+     16
+    ]
+   ]
   },
   {
    "gid": "20261024824M23",
