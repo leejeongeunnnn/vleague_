@@ -336,9 +336,25 @@
    "home": "한국전력",
    "away": "현대캐피탈",
    "venue": "진남체육관",
-   "state": "scheduled",
-   "status": "",
-   "neutral": true
+   "state": "live",
+   "status": "3세트",
+   "neutral": true,
+   "sh": 1,
+   "sa": 1,
+   "sets": [
+    [
+     25,
+     18
+    ],
+    [
+     20,
+     25
+    ],
+    [
+     4,
+     8
+    ]
+   ]
   },
   {
    "gid": "20261025824M24",
