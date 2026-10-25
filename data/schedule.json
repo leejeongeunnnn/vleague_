@@ -366,12 +366,32 @@
    "time": "13:30",
    "kind": "cup",
    "series": "컵대회 결승",
-   "home": "준결승 A승",
-   "away": "준결승 B승",
+   "home": "대한항공",
+   "away": "현대캐피탈",
    "venue": "진남체육관",
-   "state": "scheduled",
-   "status": "",
-   "neutral": true
+   "state": "final",
+   "status": "경기 종료",
+   "neutral": true,
+   "sh": 3,
+   "sa": 1,
+   "sets": [
+    [
+     26,
+     24
+    ],
+    [
+     21,
+     25
+    ],
+    [
+     25,
+     23
+    ],
+    [
+     25,
+     21
+    ]
+   ]
   },
   {
    "gid": "20261031023M1",
