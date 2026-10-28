@@ -1,7 +1,7 @@
 name: V리그 선수 프로필
 
 # 하루 1번 KOVO에서 7개 구단 선수단 프로필·사진을 받는다.
-# 이 파일이 바뀌어 올라오면 바로 한 번 실행된다.
+# 이 파일이 바뀌어 올라오면 바로 한 번 실행된다. (예매 링크·좌석 가격표 포함)
 on:
   schedule:
     - cron: "23 20 * * *"     # 한국시간 05:23
@@ -32,7 +32,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/profiles.json data/photos || true
+          git add data/profiles.json data/tickets.json data/photos || true
           if git diff --staged --quiet; then echo "변경 없음"; exit 0; fi
           git commit -m "chore: 선수 프로필 갱신 ($(date -u +'%Y-%m-%d %H:%M UTC'))"
           for i in 1 2 3; do

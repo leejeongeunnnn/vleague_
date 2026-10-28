@@ -1,7 +1,7 @@
 /* V-리그 남자부 정적 대시보드 — data/*.json 을 읽어 8개 탭을 렌더링 */
 
 const DATA = {};
-const FILES = ["meta", "teams", "schedule", "standings", "players", "news", "events", "last_season", "profiles"];
+const FILES = ["meta", "teams", "schedule", "standings", "players", "news", "events", "last_season", "profiles", "tickets"];
 
 /* ---------- 마이팀 (보는 사람 브라우저에 저장) ---------- */
 const MYTEAM_KEY = "vleague_myteam";
@@ -88,7 +88,8 @@ const fmt3 = (v) => (v == null || v === "" || !isFinite(v)) ? "-" : Number(v).to
 let TEAM = {};
 function buildTeamMap() {
   TEAM = {};
-  ((DATA.teams && DATA.teams.teams) || []).forEach(t => { TEAM[t.name] = t; });
+  const tk = (DATA.tickets && DATA.tickets.teams) || {};
+  ((DATA.teams && DATA.teams.teams) || []).forEach(t => { TEAM[t.name] = { ...t, ticket: tk[t.name] || null }; });
 }
 const colorOf = (name) => readable((TEAM[name] || {}).color || "#64748b");
 const dot = (name) => `<span class="dot" style="background:${colorOf(name)}"></span>`;
@@ -203,6 +204,19 @@ function watchLinks(g, big) {
 function ticketOf(team) {
   const t = (TEAM[team] || {}).ticket;
   return t && t.url ? t : null;
+}
+
+function showPrice(team) {
+  const t = ticketOf(team);
+  if (!t || !t.price_img) return;
+  GM.gid = "__price";
+  document.body.classList.add("gm-lock");
+  document.getElementById("game-modal").classList.add("open");
+  document.getElementById("gm-body").innerHTML = `<div class="gm-head"><div class="gm-meta">${dot(team)}${esc(team)} · ${esc((TEAM[team] || {}).arena || "")}</div>
+    <h3 style="margin-top:6px">💺 2026-27 좌석 가격표</h3>
+    <div class="wbtns" style="justify-content:center;margin-top:10px"><a class="wbtn ticket" href="${esc(t.url)}" target="_blank" rel="noopener">🎟️ 티켓링크에서 예매</a></div></div>
+    <img src="${esc(t.price_img)}" alt="${esc(team)} 좌석 가격표" style="width:100%;border-radius:12px;background:#fff">
+    <p class="hint" style="margin-top:8px">출처: 한국배구연맹(KOVO) · 가격은 구단 사정에 따라 바뀔 수 있어요</p>`;
 }
 
 /* ---------- 1. 경기 일정 ---------- */
@@ -483,8 +497,13 @@ function renderArenas() {
       <div class="sc-team">${a.team ? `${dot(a.team)}${esc((TEAM[a.team] || {}).full || a.team)} 홈` : esc(a.note || "")}</div>
       <div class="sc-row">📍 ${esc(a.city)}</div>
       ${a.team === "KB손해보험" ? '<div class="sc-row">⚠️ 의정부체육관 재건축으로 이번 시즌 임시 홈</div>' : ""}
-      <a href="https://map.naver.com/p/search/${encodeURIComponent(a.city.split(" ")[0] + " " + a.name)}" target="_blank" rel="noopener">네이버 지도에서 보기 ›</a>
+      <div class="wbtns" style="margin-top:8px">
+        <a class="wbtn" href="https://map.naver.com/p/search/${encodeURIComponent(a.city.split(" ")[0] + " " + a.name)}" target="_blank" rel="noopener">🗺️ 지도</a>
+        ${a.team && ticketOf(a.team) ? `<a class="wbtn ticket" href="${esc(ticketOf(a.team).url)}" target="_blank" rel="noopener">🎟️ 예매</a>` : ""}
+        ${a.team && ticketOf(a.team) && ticketOf(a.team).price_img ? `<button class="wbtn" data-price="${esc(a.team)}">💺 좌석 가격표</button>` : ""}
+      </div>
     </div>`).join("")}</div>`;
+  p.querySelectorAll("[data-price]").forEach(b => b.onclick = () => showPrice(b.dataset.price));
   setTimeout(() => {
     if (typeof L === "undefined") return;
     if (MAP) { MAP.remove(); MAP = null; }
@@ -558,7 +577,8 @@ function renderMyTeam() {
     const stLabel = me ? "이번 시즌" : "지난 시즌 최종";
     let html = `<div class="mt-hero" style="--tc:${colorOf(MY_TEAM)}">
       <div class="mt-top"><div><div class="mt-league">V-리그 남자부 · ${esc(t.city)} ${esc(t.arena)}</div><div class="mt-name">${esc(t.full)}</div></div>
-      <button class="btn-ghost" id="mt-change">팀 바꾸기</button></div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><button class="btn-ghost" id="mt-change">팀 바꾸기</button>
+      ${ticketOf(MY_TEAM) ? `<a class="wbtn ticket" href="${esc(ticketOf(MY_TEAM).url)}" target="_blank" rel="noopener">🎟️ 홈경기 예매</a>` : ""}</div></div>
       ${st ? `<div class="mt-stats"><div><b>${st.rank}위</b><span>${stLabel}</span></div><div><b>${st.w}승 ${st.l}패</b><span>${st.games}경기</span></div>
         <div><b>${st.pts}</b><span>승점</span></div><div><b>${t.titles}회</b><span>통산 우승</span></div></div>` : ""}
     </div>`;
@@ -764,7 +784,7 @@ function bindFlow(root) {
 
 function renderGameModal() {
   const body = document.getElementById("gm-body");
-  if (!GM.gid || !body) return;
+  if (!GM.gid || !body || GM.gid === "__price") return;
   const g = allGames().find(x => x.gid === GM.gid);
   if (!g) { body.innerHTML = emptyBox("경기 정보를 찾을 수 없어요."); return; }
   const R = liveRelay(g.gid) || GM.relay;

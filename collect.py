@@ -667,7 +667,7 @@ def kovo(path):
     return None
 
 
-def save_photo(code, url):
+def save_photo(code, url, max_w=260):
     """선수 사진을 data/photos/<코드>.<확장자> 로 저장 (이미 있으면 그대로). 사이트 주소 기준 경로를 돌려준다."""
     if not url:
         return None
@@ -682,14 +682,19 @@ def save_photo(code, url):
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, "wb") as f:
                 f.write(r.content)
-            try:  # 휴대폰에서 빨리 뜨도록 가로 260px로 줄임
+            try:  # 휴대폰에서 빨리 뜨도록 줄임 (선수 사진 260px)
                 from PIL import Image
                 im = Image.open(path)
                 im.load()
-                if im.width > 260:
+                if im.width > max_w:
                     im = im.convert("RGBA" if im.mode in ("RGBA", "LA", "P") else "RGB")
-                    im = im.resize((260, round(im.height * 260 / im.width)), Image.LANCZOS)
-                    im.save(path, "WEBP", quality=80, method=6)
+                    im = im.resize((max_w, round(im.height * max_w / im.width)), Image.LANCZOS)
+                    if ext.lower() == ".webp":
+                        im.save(path, "WEBP", quality=80, method=4)
+                    elif ext.lower() in (".jpg", ".jpeg"):
+                        im.convert("RGB").save(path, "JPEG", quality=85)
+                    else:
+                        im.save(path, optimize=True)
             except Exception:  # noqa: BLE001
                 pass
             return rel
@@ -719,6 +724,23 @@ def collect_profiles(force=False, max_age_h=20):
             code_of[name] = t["code"]
     if len(code_of) < 7:
         print("[WARN] KOVO 팀 코드 일부 누락:", code_of)
+    # 예매 링크 · 좌석 가격표 (티켓링크 구단 코드)
+    tickets = {}
+    for t in teams:
+        name = next((n for n, c in code_of.items() if c == t.get("code")), None)
+        if not name:
+            continue
+        info = {}
+        if t.get("ticketLinkTeamCode"):
+            info["url"] = f"https://www.ticketlink.co.kr/sports/volleyball/{t['ticketLinkTeamCode']}"
+        if t.get("ticketPriceUrl"):
+            info["price_img"] = save_photo(f"ticket_{t['code']}", t["ticketPriceUrl"], max_w=1200) or t["ticketPriceUrl"]
+        if t.get("homepageUrl"):
+            info["homepage"] = t["homepageUrl"]
+        if info:
+            tickets[name] = info
+    if tickets:
+        save("tickets.json", {"updated_at": now_kst().strftime("%Y-%m-%d %H:%M"), "source": "한국배구연맹(KOVO) · 티켓링크", "teams": tickets})
     if not code_of:
         STATUS["profiles"] = "실패 — 기존 프로필 유지"
         return False
