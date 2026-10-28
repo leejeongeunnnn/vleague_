@@ -725,9 +725,10 @@ def collect_profiles(force=False, max_age_h=20):
         name = next((n for n, c in code_of.items() if c == t.get("code")), None)
         if not name:
             continue
-        info = {}
-        if t.get("ticketLinkTeamCode"):
-            info["url"] = f"https://www.ticketlink.co.kr/sports/volleyball/{t['ticketLinkTeamCode']}"
+        # 2026-27 시즌부터 예매는 KOVO 통합 홈페이지 (구단별 일반 예매 페이지)
+        info = {"tcode": t["code"],
+                "url": f"https://www.kovo.co.kr/tickets/single?tcode={t['code']}",
+                "seat_url": f"https://www.kovo.co.kr/tickets/court-views?tcode={t['code']}"}
         if t.get("ticketPriceUrl"):
             info["price_img"] = save_photo(f"ticket_{t['code']}", t["ticketPriceUrl"], max_w=900) or t["ticketPriceUrl"]
         if t.get("homepageUrl"):
@@ -735,7 +736,7 @@ def collect_profiles(force=False, max_age_h=20):
         if info:
             tickets[name] = info
     if tickets:
-        save("tickets.json", {"updated_at": now_kst().strftime("%Y-%m-%d %H:%M"), "source": "한국배구연맹(KOVO) · 티켓링크", "teams": tickets})
+        save("tickets.json", {"updated_at": now_kst().strftime("%Y-%m-%d %H:%M"), "source": "한국배구연맹(KOVO) 통합 예매", "teams": tickets})
     if not code_of:
         STATUS["profiles"] = "실패 — 기존 프로필 유지"
         return False

@@ -214,8 +214,8 @@ function showPrice(team) {
   document.getElementById("game-modal").classList.add("open");
   document.getElementById("gm-body").innerHTML = `<div class="gm-head"><div class="gm-meta">${dot(team)}${esc(team)} · ${esc((TEAM[team] || {}).arena || "")}</div>
     <h3 style="margin-top:6px">💺 2026-27 좌석 가격표</h3>
-    <div class="wbtns" style="justify-content:center;margin-top:10px"><a class="wbtn ticket" href="${esc(t.url)}" target="_blank" rel="noopener">🎟️ 티켓링크에서 예매</a></div></div>
-    <img src="${esc(t.price_img)}" alt="${esc(team)} 좌석 가격표" style="width:100%;border-radius:12px;background:#fff">
+    <div class="wbtns" style="justify-content:center;margin-top:10px"><a class="wbtn ticket" href="${esc(t.url)}" target="_blank" rel="noopener">🎟️ KOVO에서 예매</a>${t.seat_url ? `<a class="wbtn" href="${esc(t.seat_url)}" target="_blank" rel="noopener">👀 좌석 시야 보기</a>` : ""}</div></div>
+    <img src="${esc(t.price_img)}" alt="${esc(team)} 좌석 가격표" class="price-img" onerror="this.outerHTML='<div class=&quot;empty&quot;>가격표 이미지를 불러오지 못했어요. 새로고침하거나 KOVO에서 확인해 주세요.</div>'">
     <p class="hint" style="margin-top:8px">출처: 한국배구연맹(KOVO) · 가격은 구단 사정에 따라 바뀔 수 있어요</p>`;
 }
 

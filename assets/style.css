@@ -498,3 +498,4 @@ table.rank th { line-height:1.25; }
 .wbtn:hover { border-color:#475569; }
 .wbtn.live { background:var(--loss); border-color:var(--loss); color:#fff; }
 .wbtn.ticket { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); color:#fcd34d; }
+.price-img { width:100%; border-radius:12px; background:#fff; display:block; min-height:200px; }
