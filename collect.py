@@ -665,6 +665,27 @@ def kovo(path):
     return None
 
 
+def save_photo(code, url):
+    """선수 사진을 data/photos/<코드>.<확장자> 로 저장 (이미 있으면 그대로). 사이트 주소 기준 경로를 돌려준다."""
+    if not url:
+        return None
+    ext = os.path.splitext(url.split("?")[0])[1] or ".webp"
+    rel = f"data/photos/{code}{ext}"
+    path = os.path.join(ROOT, rel)
+    if os.path.exists(path) and os.path.getsize(path) > 500:
+        return rel
+    try:
+        r = requests.get(url, headers={"User-Agent": HEADERS["User-Agent"], "Referer": "https://www.kovo.co.kr/"}, timeout=20)
+        if r.status_code == 200 and len(r.content) > 500 and r.headers.get("content-type", "").startswith("image"):
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "wb") as f:
+                f.write(r.content)
+            return rel
+    except Exception:  # noqa: BLE001
+        pass
+    return None
+
+
 def collect_profiles(force=False, max_age_h=20):
     """7개 구단 선수단 + 선수별 프로필·시즌 기록·이력 → data/profiles.json (하루 1번)"""
     old = load("profiles.json", {}) or {}
@@ -715,12 +736,14 @@ def collect_profiles(force=False, max_age_h=20):
                                "atk": r.get("attackTotalSuccess"), "blk": r.get("blockingSetSuccess"),
                                "srv": r.get("serveSetSuccess"), "rcv": r.get("receiveSuccess"),
                                "dig": r.get("digSetSuccess"), "set": r.get("setSuccess")})
+            img = p.get("image") or d.get("image")
+            img = save_photo(pc, img) or img
             lst.append({"code": pc, "name": p.get("name"), "no": p.get("backNumber"), "pos": p.get("position") or "",
                         "birth": p.get("birthDate"), "age": age,
                         "height": d.get("height"), "weight": d.get("weight"),
                         "school": d.get("school"), "nation": d.get("nation"),
                         "foreign": "FOREIGNER" in st and "ASIS_QUARTER" not in st, "asia": "ASIS_QUARTER" in st,
-                        "img": p.get("image") or d.get("image"), "career": career,
+                        "img": img, "career": career,
                         "history": hist[:1] + hist[-4:] if len(hist) > 5 else hist})
             time.sleep(0.15)
         lst.sort(key=lambda x: (x["no"] is None, x["no"] or 0))
@@ -805,6 +828,7 @@ def main():
     ap.add_argument("--fixture", help="네이버 응답 대신 쓸 JSON 파일 (로컬 테스트용)")
     ap.add_argument("--skip-news", action="store_true")
     ap.add_argument("--profiles", action="store_true", help="선수 프로필 강제 갱신")
+    ap.add_argument("--only-profiles", action="store_true", help="선수 프로필만 받고 끝")
     args = ap.parse_args()
 
     if args.fixture:
@@ -816,15 +840,20 @@ def main():
     if args.live:
         run_live()
         return
+    if args.only_profiles:
+        collect_profiles(force=True)
+        print(STATUS)
+        return
 
     changed = False
     changed |= bool(collect_schedule())
     if not args.skip_news:
         changed |= bool(collect_news())
-    try:
-        changed |= bool(collect_profiles(force=args.profiles))
-    except Exception as e:  # noqa: BLE001
-        print("[WARN] 선수 프로필 실패:", e)
+    if args.profiles:
+        try:
+            changed |= bool(collect_profiles(force=True))
+        except Exception as e:  # noqa: BLE001
+            print("[WARN] 선수 프로필 실패:", e)
 
     meta = load("meta.json", {}) or {}
     if changed or meta.get("status") != STATUS:

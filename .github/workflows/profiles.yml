@@ -1,0 +1,42 @@
+name: V리그 선수 프로필
+
+# 하루 1번 KOVO에서 7개 구단 선수단 프로필·사진을 받는다.
+# 이 파일이 바뀌어 올라오면 바로 한 번 실행된다.
+on:
+  schedule:
+    - cron: "23 20 * * *"     # 한국시간 05:23
+  push:
+    paths: [".github/workflows/profiles.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vleague-profiles
+  cancel-in-progress: false
+
+jobs:
+  profiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: 선수 프로필 수집
+        run: python collect.py --only-profiles
+      - name: 커밋 & 푸시
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/profiles.json data/photos || true
+          if git diff --staged --quiet; then echo "변경 없음"; exit 0; fi
+          git commit -m "chore: 선수 프로필 갱신 ($(date -u +'%Y-%m-%d %H:%M UTC'))"
+          for i in 1 2 3; do
+            git pull --rebase -q origin main && git push -q origin HEAD:main && exit 0
+            echo "푸시 충돌, 재시도 $i"; sleep 5
+          done
+          exit 1
