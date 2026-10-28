@@ -11,6 +11,7 @@ V-리그 남자부 데이터 수집기 (GitHub Actions에서 실행)
 원칙: 수집에 실패하면 기존 파일을 지우지 않고 그대로 둔다.
 """
 import argparse
+import collections
 import json
 import os
 import re
@@ -339,7 +340,12 @@ def collect_schedule():
     final = sum(1 for g in games if g["state"] == "final")
     STATUS["schedule"] = f"성공 {len(games)}경기 (종료 {final}, 세트점수 {with_sets})" + (f" · 일부 실패 {len(errors)}" if errors else "")
     print("[OK]", STATUS["schedule"], months)
-    return save("schedule.json", {"source": "네이버 스포츠", "games": games})
+    changed = save("schedule.json", {"source": "네이버 스포츠", "games": games})
+    try:
+        changed |= bool(build_player_stats(games))
+    except Exception as e:  # noqa: BLE001
+        print("[WARN] 선수 기록 집계 실패:", e)
+    return changed
 
 
 # ---------------------------------------------------------------- 뉴스
@@ -484,6 +490,159 @@ def save_finished_relays(games, budget=8):
             save(f"games/{g['gid']}.json", r)
             saved += 1
     return saved
+
+
+# ---------------------------------------------------------------- 선수 기록 (문자중계 집계)
+ATTACKS = ("퀵오픈", "백어택", "속공", "오픈", "시간차", "이동공격", "후위공격")
+ERR_WORDS = ("아웃", "네트걸림", "라인오버", "오버넷", "포히트", "터치넷", "캐치볼", "더블콘텍트", "기타범실")
+POS_KR = {"S": "세터", "OH": "아웃사이드 히터", "OP": "아포짓", "MB": "미들블로커", "L": "리베로"}
+
+
+def classify_play(rest):
+    """'퀵오픈 성공' 같은 문구 → (분류, 결과)  결과: ok / err / fail / try"""
+    head, _, tail = rest.partition(" ")
+    res = "ok" if tail == "성공" or tail == "정확" else "err" if tail in ERR_WORDS else "fail" if tail == "실패" else "try"
+    if head in ATTACKS:
+        return "atk", res
+    if head in ("서브", "스파이크서브"):
+        return "srv", res
+    if head == "블록킹":
+        return "blk", res
+    if rest == "유효 블로킹":
+        return "blk_eff", "ok"
+    if rest == "블록킹 어시스트":
+        return "blk_ast", "ok"
+    if head == "디그":
+        return "dig", "ok" if tail == "" else "fail"
+    if head == "세트":
+        return "set", res
+    if head == "리시브":
+        return "rcv", res
+    return None, None
+
+
+def build_player_stats(games):
+    """data/games/*.json 문자중계로 시즌 개인 기록을 만든다.
+    정규리그 경기가 하나라도 있으면 정규리그만, 없으면 컵대회 기록."""
+    gdir = os.path.join(DATA, "games")
+    by_id = {g["gid"]: g for g in games}
+    files = []
+    for f in sorted(os.listdir(gdir)) if os.path.isdir(gdir) else []:
+        gid = f[:-5]
+        if f.endswith(".json") and gid in by_id and by_id[gid]["state"] == "final":
+            files.append((gid, by_id[gid]))
+    reg = [x for x in files if x[1]["kind"] == "regular"]
+    scope, use = ("정규리그", reg) if reg else ("컵대회", [x for x in files if x[1]["kind"] == "cup"])
+    P = {}
+
+    def pl(team, name):
+        k = (team, name)
+        if k not in P:
+            P[k] = {"name": name, "team": team, "pos": collections.Counter(), "games": set(), "sets": set(),
+                    "atk": 0, "atk_ok": 0, "atk_err": 0, "srv": 0, "srv_ok": 0, "srv_err": 0,
+                    "blk_ok": 0, "blk_eff": 0, "blk_ast": 0, "dig_ok": 0, "dig_fail": 0,
+                    "set": 0, "set_ok": 0, "rcv": 0, "rcv_ok": 0, "rcv_fail": 0}
+        return P[k]
+
+    for gid, g in use:
+        try:
+            R = load(f"games/{gid}.json", {}) or {}
+        except Exception:
+            continue
+        for sn, st in (R.get("sets") or {}).items():
+            sk = (gid, sn)
+            for side, team in (("home", g["home"]), ("away", g["away"])):
+                for x in (st.get("lineup") or {}).get(side, [])[:6]:
+                    p = pl(team, x["n"]); p["sets"].add(sk); p["games"].add(gid)
+                    if x.get("p"):
+                        p["pos"][x["p"]] += 1
+                for x in (st.get("lineup") or {}).get(side, [])[6:]:
+                    if x.get("p") == "L":
+                        pl(team, x["n"])["pos"]["L"] += 1
+            for e in st.get("relay") or []:
+                if e[1] is None:
+                    continue
+                team = g["home"] if e[1] == 1 else g["away"]
+                name, _, rest = e[3].partition(" ")
+                if e[2] in ("I",):
+                    p = pl(team, e[3]); p["sets"].add(sk); p["games"].add(gid)
+                    continue
+                if not rest or e[2] in ("O", "F", "T"):
+                    continue
+                cat, res = classify_play(rest)
+                if not cat:
+                    continue
+                p = pl(team, name); p["sets"].add(sk); p["games"].add(gid)
+                if cat == "atk":
+                    p["atk"] += 1; p["atk_ok"] += res == "ok"; p["atk_err"] += res == "err"
+                elif cat == "srv":
+                    p["srv"] += 1; p["srv_ok"] += res == "ok"; p["srv_err"] += res == "err"
+                elif cat == "blk":
+                    p["blk_ok"] += res == "ok"
+                elif cat == "blk_eff":
+                    p["blk_eff"] += 1
+                elif cat == "blk_ast":
+                    p["blk_ast"] += 1
+                elif cat == "dig":
+                    p["dig_ok"] += res == "ok"; p["dig_fail"] += res != "ok"
+                elif cat == "set":
+                    p["set"] += 1; p["set_ok"] += res == "ok"
+                elif cat == "rcv":
+                    p["rcv"] += 1; p["rcv_ok"] += res == "ok"; p["rcv_fail"] += res in ("fail", "err")
+
+    rows = []
+    for p in P.values():
+        ns = len(p["sets"])
+        if not ns:
+            continue
+        pos = p["pos"].most_common(1)[0][0] if p["pos"] else ""
+        pts = p["atk_ok"] + p["blk_ok"] + p["srv_ok"]
+        rows.append({**{k: v for k, v in p.items() if k not in ("pos", "games", "sets")},
+                     "pos": POS_KR.get(pos, pos), "g": len(p["games"]), "s": ns, "pts": pts})
+    if not rows:
+        return save("players.json", {"season": SEASON, "scope": scope, "source": "", "categories": {}})
+    maxs = max(r["s"] for r in rows)
+    q_sets = max(1, round(maxs * 0.4))      # 세트당 순위 규정 세트
+    max_atk = max(r["atk"] for r in rows) or 1
+    max_rcv = max(r["rcv"] for r in rows) or 1
+    pct = lambda a, b: round(a / b * 100, 1) if b else 0.0  # noqa: E731
+    per = lambda a, b: round(a / b, 2) if b else 0.0  # noqa: E731
+
+    def cat(cols, flt, key, fmt, n=30):
+        lst = sorted([r for r in rows if flt(r)], key=key, reverse=True)[:n]
+        return {"columns": cols, "rows": [{"name": r["name"], "team": r["team"], "pos": r["pos"], **fmt(r)} for r in lst]}
+
+    cats = {
+        "득점": cat(["경기", "세트", "득점", "공격", "블로킹", "서브"], lambda r: r["pts"] > 0, lambda r: (r["pts"], r["atk_ok"]),
+                  lambda r: {"경기": r["g"], "세트": r["s"], "득점": r["pts"], "공격": r["atk_ok"], "블로킹": r["blk_ok"], "서브": r["srv_ok"]}),
+        "공격": cat(["시도", "성공", "범실", "성공률"], lambda r: r["atk"] >= max(15, max_atk * 0.25), lambda r: pct(r["atk_ok"], r["atk"]),
+                  lambda r: {"시도": r["atk"], "성공": r["atk_ok"], "범실": r["atk_err"], "성공률": pct(r["atk_ok"], r["atk"])}),
+        "블로킹": cat(["세트", "블로킹", "유효", "어시스트", "세트당"], lambda r: r["s"] >= q_sets and r["blk_ok"] > 0, lambda r: per(r["blk_ok"], r["s"]),
+                   lambda r: {"세트": r["s"], "블로킹": r["blk_ok"], "유효": r["blk_eff"], "어시스트": r["blk_ast"], "세트당": per(r["blk_ok"], r["s"])}),
+        "서브": cat(["세트", "시도", "에이스", "범실", "세트당"], lambda r: r["s"] >= q_sets and r["srv"] > 0, lambda r: per(r["srv_ok"], r["s"]),
+                  lambda r: {"세트": r["s"], "시도": r["srv"], "에이스": r["srv_ok"], "범실": r["srv_err"], "세트당": per(r["srv_ok"], r["s"])}),
+        "디그": cat(["세트", "성공", "실패", "세트당"], lambda r: r["s"] >= q_sets and r["dig_ok"] > 0, lambda r: per(r["dig_ok"], r["s"]),
+                  lambda r: {"세트": r["s"], "성공": r["dig_ok"], "실패": r["dig_fail"], "세트당": per(r["dig_ok"], r["s"])}),
+        "세트": cat(["세트", "시도", "정확", "세트당"], lambda r: r["s"] >= q_sets and r["set_ok"] > 0, lambda r: per(r["set_ok"], r["s"]),
+                  lambda r: {"세트": r["s"], "시도": r["set"], "정확": r["set_ok"], "세트당": per(r["set_ok"], r["s"])}),
+        "리시브": cat(["시도", "정확", "실패", "효율"], lambda r: r["rcv"] >= max(15, max_rcv * 0.25),
+                   lambda r: pct(r["rcv_ok"] - r["rcv_fail"], r["rcv"]),
+                   lambda r: {"시도": r["rcv"], "정확": r["rcv_ok"], "실패": r["rcv_fail"], "효율": pct(r["rcv_ok"] - r["rcv_fail"], r["rcv"])}),
+    }
+    notes = {"공격": "성공률 = 성공 ÷ 시도 (시도 상위권만)", "블로킹": f"세트당 순위 · {q_sets}세트 이상 출전",
+             "서브": f"에이스 세트당 순위 · {q_sets}세트 이상", "디그": f"세트당 순위 · {q_sets}세트 이상",
+             "세트": f"정확한 세트(토스) 세트당 순위 · {q_sets}세트 이상", "리시브": "효율 = (정확 − 실패) ÷ 시도",
+             "득점": "득점 = 공격 성공 + 블로킹 + 서브 에이스"}
+    for k, v in cats.items():
+        v["note"] = notes.get(k, "")
+    # 팀별 출전 선수 (프로필 탭 보조용)
+    roster = collections.defaultdict(list)
+    for r in sorted(rows, key=lambda r: -r["s"]):
+        roster[r["team"]].append({"name": r["name"], "pos": r["pos"], "g": r["g"], "s": r["s"], "pts": r["pts"]})
+    STATUS["players"] = f"{scope} {len(use)}경기 · {len(rows)}명"
+    return save("players.json", {"season": SEASON, "scope": scope, "games": len(use),
+                                 "source": f"네이버 문자중계 집계 · {scope} {len(use)}경기",
+                                 "categories": cats, "roster": dict(roster)})
 
 
 # ---------------------------------------------------------------- 실시간 (경기 중)
