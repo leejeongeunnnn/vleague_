@@ -668,10 +668,10 @@ def kovo(path):
 
 
 def save_photo(code, url, max_w=260):
-    """선수 사진을 data/photos/<코드>.<확장자> 로 저장 (이미 있으면 그대로). 사이트 주소 기준 경로를 돌려준다."""
+    """사진을 data/photos/<코드>.webp 로 저장 (이미 있으면 그대로). 사이트 주소 기준 경로를 돌려준다."""
     if not url:
         return None
-    ext = os.path.splitext(url.split("?")[0])[1] or ".webp"
+    ext = ".webp"
     rel = f"data/photos/{code}{ext}"
     path = os.path.join(ROOT, rel)
     if os.path.exists(path) and os.path.getsize(path) > 500:
@@ -686,15 +686,10 @@ def save_photo(code, url, max_w=260):
                 from PIL import Image
                 im = Image.open(path)
                 im.load()
+                im = im.convert("RGBA" if im.mode in ("RGBA", "LA", "P") else "RGB")
                 if im.width > max_w:
-                    im = im.convert("RGBA" if im.mode in ("RGBA", "LA", "P") else "RGB")
                     im = im.resize((max_w, round(im.height * max_w / im.width)), Image.LANCZOS)
-                    if ext.lower() == ".webp":
-                        im.save(path, "WEBP", quality=80, method=4)
-                    elif ext.lower() in (".jpg", ".jpeg"):
-                        im.convert("RGB").save(path, "JPEG", quality=85)
-                    else:
-                        im.save(path, optimize=True)
+                im.save(path, "WEBP", quality=78, method=4)  # 원본이 png/jpg여도 webp로
             except Exception:  # noqa: BLE001
                 pass
             return rel
@@ -734,7 +729,7 @@ def collect_profiles(force=False, max_age_h=20):
         if t.get("ticketLinkTeamCode"):
             info["url"] = f"https://www.ticketlink.co.kr/sports/volleyball/{t['ticketLinkTeamCode']}"
         if t.get("ticketPriceUrl"):
-            info["price_img"] = save_photo(f"ticket_{t['code']}", t["ticketPriceUrl"], max_w=1200) or t["ticketPriceUrl"]
+            info["price_img"] = save_photo(f"ticket_{t['code']}", t["ticketPriceUrl"], max_w=900) or t["ticketPriceUrl"]
         if t.get("homepageUrl"):
             info["homepage"] = t["homepageUrl"]
         if info:

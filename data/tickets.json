@@ -4,37 +4,37 @@
  "teams": {
   "대한항공": {
    "url": "https://www.ticketlink.co.kr/sports/volleyball/134",
-   "price_img": "data/photos/ticket_1001.png",
+   "price_img": "data/photos/ticket_1001.webp",
    "homepage": "http://www.kal-jumbos.co.kr/"
   },
   "현대캐피탈": {
    "url": "https://www.ticketlink.co.kr/sports/volleyball/133",
-   "price_img": "data/photos/ticket_1005.png",
+   "price_img": "data/photos/ticket_1005.webp",
    "homepage": "https://www.skywalkers.co.kr/"
   },
   "우리카드": {
    "url": "https://www.ticketlink.co.kr/sports/volleyball/93",
-   "price_img": "data/photos/ticket_1009.jpeg",
+   "price_img": "data/photos/ticket_1009.webp",
    "homepage": "http://www.woorivolleyballclub.co.kr"
   },
   "KB손해보험": {
    "url": "https://www.ticketlink.co.kr/sports/volleyball/129",
-   "price_img": "data/photos/ticket_1004.png",
+   "price_img": "data/photos/ticket_1004.webp",
    "homepage": "http://www.kbstarsvc.co.kr"
   },
   "한국전력": {
    "url": "https://www.ticketlink.co.kr/sports/volleyball/67",
-   "price_img": "data/photos/ticket_1006.png",
+   "price_img": "data/photos/ticket_1006.webp",
    "homepage": "http://home.kepco.co.kr/kepco/SP/A/main/volley.do?menuCd=FN1104"
   },
   "OK저축은행": {
    "url": "https://www.ticketlink.co.kr/sports/volleyball/94",
-   "price_img": "data/photos/ticket_1008.png",
+   "price_img": "data/photos/ticket_1008.webp",
    "homepage": "http://www.okfinancialgroupvc.com"
   },
   "삼성화재": {
    "url": "https://www.ticketlink.co.kr/sports/volleyball/95",
-   "price_img": "data/photos/ticket_1002.png",
+   "price_img": "data/photos/ticket_1002.webp",
    "homepage": "http://www.bluefangs.co.kr"
   }
  }
