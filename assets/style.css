@@ -462,3 +462,30 @@ table.rank th { line-height:1.25; }
 .rl-line.chg { color:#93c5fd; font-size:.78rem; }
 .rl-flag { text-align:center; font-size:.76rem; color:var(--muted); padding:6px; border:1px dashed var(--border); border-radius:10px; }
 .gm-card small { color:var(--muted); font-weight:400; font-size:.68rem; }
+
+/* ---------- 선수단 · 프로필 ---------- */
+.plink { color:var(--text); cursor:pointer; text-decoration:none; border-bottom:1px dotted #475569; }
+.plink:hover { color:var(--accent); }
+.pf-card { cursor:pointer; }
+.pf-card:hover { border-color:#475569; }
+.pf-card.open { grid-column: 1 / -1; border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); cursor:default; }
+.pf-img { width:46px; height:46px; border-radius:50%; object-fit:cover; object-position:top; background:var(--card-2); flex:0 0 auto; }
+.pf-card.open .pf-img { width:72px; height:72px; }
+.pf-more { font-size:.72rem; color:var(--accent-2); font-weight:600; }
+.pf-hist { margin-top:8px; font-size:.76rem; color:var(--muted); line-height:1.6; border-top:1px dashed var(--border); padding-top:6px; }
+.pf-summary b { font-size:.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* ---------- 경기 흐름 그래프 ---------- */
+.flow-card { padding:12px 12px 10px; }
+.flow-legend { display:flex; justify-content:space-between; gap:8px; font-size:.74rem; color:var(--muted); margin-bottom:4px; flex-wrap:wrap; }
+.flow-legend i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px; }
+.flow-wrap { position:relative; touch-action:pan-y; }
+.flow-svg { width:100%; height:150px; display:block; }
+.flow-grid { stroke:var(--border); stroke-width:1; stroke-dasharray:2 4; vector-effect:non-scaling-stroke; }
+.flow-zero { stroke:#64748b; stroke-width:1; vector-effect:non-scaling-stroke; }
+.flow-line { fill:none; stroke:var(--text); stroke-width:2; stroke-linejoin:round; }
+.flow-cross { stroke:var(--muted); stroke-width:1; }
+.flow-tick { fill:var(--muted); font-size:10px; }
+.flow-tip { position:absolute; top:-6px; transform:translate(-50%,-100%); background:#0b0f17; border:1px solid var(--border); border-radius:8px; padding:4px 8px; font-size:.74rem; white-space:nowrap; pointer-events:none; z-index:2; }
+.flow-foot { font-size:.74rem; color:var(--muted); margin-top:6px; }
+.flow-foot b { color:var(--text); }

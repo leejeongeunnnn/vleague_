@@ -645,6 +645,94 @@ def build_player_stats(games):
                                  "categories": cats, "roster": dict(roster)})
 
 
+# ---------------------------------------------------------------- 선수 프로필 (KOVO 공식 API)
+KOVO_API = "https://api.kovo.co.kr"
+KOVO_H = {**HEADERS, "Origin": "https://www.kovo.co.kr", "Referer": "https://www.kovo.co.kr/"}
+
+
+def kovo(path):
+    for i in range(3):
+        try:
+            r = requests.get(KOVO_API + path, headers=KOVO_H, timeout=20)
+            if r.status_code == 200:
+                js = r.json()
+                if (js.get("result") or {}).get("status") == 200:
+                    return js.get("payload")
+                return None
+        except Exception:  # noqa: BLE001
+            pass
+        time.sleep(1.5 * (i + 1))
+    return None
+
+
+def collect_profiles(force=False, max_age_h=20):
+    """7개 구단 선수단 + 선수별 프로필·시즌 기록·이력 → data/profiles.json (하루 1번)"""
+    old = load("profiles.json", {}) or {}
+    if not force and old.get("updated_at"):
+        try:
+            age = now_kst() - datetime.strptime(old["updated_at"], "%Y-%m-%d %H:%M").replace(tzinfo=KST)
+            if age < timedelta(hours=max_age_h):
+                return False
+        except Exception:  # noqa: BLE001
+            pass
+    teams = kovo("/teams") or []
+    code_of = {}
+    for t in teams:
+        if t.get("gender") != "MALE" or not t.get("visible"):
+            continue
+        ko = next((x for x in t.get("translations") or [] if x.get("languageCode") == "ko"), {})
+        name = team_kr(ko.get("shortName") or ko.get("name") or "")
+        if name in TEAMS and name not in code_of:
+            code_of[name] = t["code"]
+    if len(code_of) < 7:
+        print("[WARN] KOVO 팀 코드 일부 누락:", code_of)
+    if not code_of:
+        STATUS["profiles"] = "실패 — 기존 프로필 유지"
+        return False
+    today = now_kst().date()
+    out = {}
+    for team, code in code_of.items():
+        roster = kovo(f"/teams/{code}/players") or []
+        lst = []
+        for p in roster:
+            if not p.get("visible", True):
+                continue
+            pc = p["playerCode"]
+            d = kovo(f"/players/{pc}") or {}
+            recs = kovo(f"/players/{pc}/season-records") or []
+            hist = kovo(f"/players/{pc}/history") or []
+            st = p.get("status") or []
+            age = None
+            try:
+                b = date.fromisoformat(p.get("birthDate") or d.get("birthDate"))
+                age = today.year - b.year - ((today.month, today.day) < (b.month, b.day))
+            except Exception:  # noqa: BLE001
+                pass
+            career = []
+            for r in recs[:10]:
+                career.append({"season": r.get("seasonDivision"), "div": r.get("leagueDivision"),
+                               "g": r.get("gameCount"), "s": r.get("setCount"), "pts": r.get("point"),
+                               "atk": r.get("attackTotalSuccess"), "blk": r.get("blockingSetSuccess"),
+                               "srv": r.get("serveSetSuccess"), "rcv": r.get("receiveSuccess"),
+                               "dig": r.get("digSetSuccess"), "set": r.get("setSuccess")})
+            lst.append({"code": pc, "name": p.get("name"), "no": p.get("backNumber"), "pos": p.get("position") or "",
+                        "birth": p.get("birthDate"), "age": age,
+                        "height": d.get("height"), "weight": d.get("weight"),
+                        "school": d.get("school"), "nation": d.get("nation"),
+                        "foreign": "FOREIGNER" in st and "ASIS_QUARTER" not in st, "asia": "ASIS_QUARTER" in st,
+                        "img": p.get("image") or d.get("image"), "career": career,
+                        "history": hist[:1] + hist[-4:] if len(hist) > 5 else hist})
+            time.sleep(0.15)
+        lst.sort(key=lambda x: (x["no"] is None, x["no"] or 0))
+        out[team] = lst
+        print(f"[OK] {team} 선수 {len(lst)}명")
+    if not any(out.values()):
+        STATUS["profiles"] = "실패 — 기존 프로필 유지"
+        return False
+    STATUS["profiles"] = f"성공 {sum(len(v) for v in out.values())}명"
+    return save("profiles.json", {"updated_at": now_kst().strftime("%Y-%m-%d %H:%M"), "source": "한국배구연맹(KOVO)", "teams": out})
+
+
 # ---------------------------------------------------------------- 실시간 (경기 중)
 def run_live():
     """오늘 경기만 받아 data/live.json 에 쓴다. 마지막 줄에 CONTINUE / STOP 출력."""
@@ -716,6 +804,7 @@ def main():
     ap.add_argument("--live", action="store_true", help="오늘 경기 실시간 점수만 수집 (live.json)")
     ap.add_argument("--fixture", help="네이버 응답 대신 쓸 JSON 파일 (로컬 테스트용)")
     ap.add_argument("--skip-news", action="store_true")
+    ap.add_argument("--profiles", action="store_true", help="선수 프로필 강제 갱신")
     args = ap.parse_args()
 
     if args.fixture:
@@ -732,6 +821,10 @@ def main():
     changed |= bool(collect_schedule())
     if not args.skip_news:
         changed |= bool(collect_news())
+    try:
+        changed |= bool(collect_profiles(force=args.profiles))
+    except Exception as e:  # noqa: BLE001
+        print("[WARN] 선수 프로필 실패:", e)
 
     meta = load("meta.json", {}) or {}
     if changed or meta.get("status") != STATUS:

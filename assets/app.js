@@ -1,7 +1,7 @@
 /* V-리그 남자부 정적 대시보드 — data/*.json 을 읽어 8개 탭을 렌더링 */
 
 const DATA = {};
-const FILES = ["meta", "teams", "schedule", "standings", "players", "news", "events", "last_season"];
+const FILES = ["meta", "teams", "schedule", "standings", "players", "news", "events", "last_season", "profiles"];
 
 /* ---------- 마이팀 (보는 사람 브라우저에 저장) ---------- */
 const MYTEAM_KEY = "vleague_myteam";
@@ -340,7 +340,8 @@ function renderPlayers() {
   const pl = DATA.players || {};
   const cats = pl.categories || {};
   const keys = Object.keys(cats).filter(k => cats[k] && cats[k].rows && cats[k].rows.length);
-  let html = `<h2 class="section-title">🏐 선수 기록</h2>`;
+  let html = `<h2 class="section-title">🏐 선수 기록${pl.scope ? ` <span class="hint" style="margin:0">${esc(pl.scope)} ${pl.games || ""}경기</span>` : ""}</h2>`;
+  if (pl.scope === "컵대회") html += `<p class="hint">정규리그가 시작되면(10월 31일~) 정규리그 기록으로 자동으로 바뀌어요.</p>`;
   if (keys.length) {
     if (!PL_CAT || !keys.includes(PL_CAT)) PL_CAT = keys[0];
     const c = cats[PL_CAT];
@@ -350,9 +351,9 @@ function renderPlayers() {
     html += `<div class="stage-tabs">${keys.map(k => `<button class="stage-chip ${k === PL_CAT ? "active" : ""}" data-pc="${esc(k)}">${esc(k)}</button>`).join("")}</div>
       <div class="card table-scroll"><table class="stats"><thead><tr><th>#</th><th style="text-align:left">선수</th><th style="text-align:left">팀</th>
       ${cols.map(col => `<th data-ps="${esc(col)}">${esc(col)}${PL_SORT === col ? " ▼" : ""}</th>`).join("")}</tr></thead><tbody>
-      ${rows.map((r, i) => `<tr class="${isMine(r.team) ? "mine-row" : ""}"><td class="num">${i + 1}</td><td class="pname">${esc(r.name)}</td><td class="pteam">${dot(r.team)}${esc(r.team)}</td>
+      ${rows.map((r, i) => `<tr class="${isMine(r.team) ? "mine-row" : ""}"><td class="num">${i + 1}</td><td class="pname"><a class="plink" data-pteam="${esc(r.team)}" data-pname="${esc(r.name)}">${esc(r.name)}</a>${r.pos ? `<div class="gm-pos">${esc(r.pos)}</div>` : ""}</td><td class="pteam">${dot(r.team)}${esc(r.team)}</td>
         ${cols.map(col => `<td class="num">${esc(r[col] == null ? "-" : r[col])}</td>`).join("")}</tr>`).join("")}
-      </tbody></table></div><p class="hint">출처: ${esc(pl.source || "-")} · 열 제목을 누르면 그 기준으로 정렬</p>`;
+      </tbody></table></div><p class="hint">${c.note ? esc(c.note) + "<br>" : ""}출처: ${esc(pl.source || "-")} · 열 제목을 누르면 정렬 · 이름을 누르면 프로필</p>`;
   } else {
     html += emptyBox("이번 시즌 개인 기록은 정규시즌 개막(10월 31일) 후 경기 결과가 쌓이면 표시됩니다.");
   }
@@ -364,6 +365,85 @@ function renderPlayers() {
   p.innerHTML = html;
   p.querySelectorAll("[data-pc]").forEach(b => b.onclick = () => { PL_CAT = b.dataset.pc; PL_SORT = null; renderPlayers(); });
   p.querySelectorAll("th[data-ps]").forEach(th => th.onclick = () => { PL_SORT = th.dataset.ps; renderPlayers(); });
+  p.querySelectorAll(".plink").forEach(a => a.onclick = () => openProfile(a.dataset.pteam, a.dataset.pname));
+}
+
+/* ---------- 선수단 · 프로필 ---------- */
+const POS_ORDER = ["S", "OH", "OP", "MB", "L"];
+const POS_FULL = { S: "세터", OH: "아웃사이드 히터", OP: "아포짓", MB: "미들블로커", L: "리베로" };
+let SQ_TEAM = null, SQ_OPEN = null;
+function seasonLine(team, name) {
+  const rs = ((DATA.players || {}).roster || {})[team] || [];
+  return rs.find(r => r.name === name);
+}
+function openProfile(team, name) {
+  SQ_TEAM = team; SQ_OPEN = name; showTab("squad"); renderSquad();
+  setTimeout(() => { const el = document.querySelector(`.pf-card[data-open="1"]`); if (el) el.scrollIntoView({ behavior: "smooth", block: "center" }); }, 60);
+}
+const seasonShort = (x) => {
+  const m = /^(\d{2})(\d{2})-\d{2}(\d{2})\s*\[(.)\]/.exec(x || "");
+  return m ? `${m[2]}-${m[3]} ${({ 정: "정규", 컵: "컵", 챔: "챔프", 플: "PO", 준: "준PO" })[m[4]] || m[4]}` : (x || "");
+};
+const fmtN = (v, d = 0) => v == null || v === "" ? "-" : Number(v).toFixed(d);
+function profileCard(team, p) {
+  const open = SQ_OPEN === p.name;
+  const sl = seasonLine(team, p.name);
+  const scope = (DATA.players || {}).scope || "";
+  const badges = [p.foreign ? '<span class="pf-ik">외국인</span>' : "", p.asia ? '<span class="pf-ik">아시아쿼터</span>' : ""].join("");
+  const body = [
+    p.age != null ? `${p.age}세` : "", p.height ? `${p.height}cm` : "", p.weight ? `${p.weight}kg` : ""].filter(Boolean).join(" · ");
+  let html = `<div class="card pf-card ${open ? "open" : ""}" data-open="${open ? 1 : 0}" data-pn="${esc(p.name)}" role="button" tabindex="0">
+    <div class="pf-head">
+      ${p.img ? `<img class="pf-img" src="${esc(p.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}
+      <div class="pf-no" style="color:${colorOf(team)}">${p.no ?? ""}</div>
+      <div class="pf-names"><div class="pf-name">${esc(p.name)}</div><div class="pf-jp">${esc(POS_FULL[p.pos] || p.pos)}${body ? " · " + esc(body) : ""}</div></div>
+      <div class="pf-badges">${badges}</div>
+    </div>
+    ${sl ? `<div class="pf-stat">${esc(scope)} ${sl.g}경기 ${sl.s}세트 · <b>${sl.pts}점</b></div>` : ""}`;
+  if (open) {
+    html += `${p.nation && p.nation !== "한국" ? `<div class="pf-row"><span>🌏</span><span>${esc(p.nation)}</span></div>` : ""}
+      ${p.school ? `<div class="pf-row"><span>🎓</span><span>${esc(p.school)}</span></div>` : ""}
+      ${p.birth ? `<div class="pf-row"><span>🎂</span><span>${esc(p.birth)}</span></div>` : ""}`;
+    if (p.career && p.career.length) {
+      html += `<div class="table-scroll" style="margin-top:6px"><table class="gm-tbl"><thead><tr><th class="l">시즌</th><th>경기</th><th>득점</th><th>공격%</th><th>블로킹/S</th><th>서브/S</th><th>리시브%</th><th>디그/S</th>${p.pos === "S" ? "<th>세트/S</th>" : ""}</tr></thead><tbody>
+        ${p.career.map(c => `<tr><td class="l" style="white-space:nowrap">${esc(seasonShort(c.season))}</td><td>${fmtN(c.g)}</td><td>${fmtN(c.pts)}</td><td>${fmtN(c.atk, 1)}</td><td>${fmtN(c.blk, 2)}</td><td>${fmtN(c.srv, 2)}</td><td>${fmtN(c.rcv, 1)}</td><td>${fmtN(c.dig, 2)}</td>${p.pos === "S" ? `<td>${fmtN(c.set, 2)}</td>` : ""}</tr>`).join("")}
+        </tbody></table></div><div class="hint" style="margin:4px 0 0">공격% = 공격 종합 성공률 · 리시브% = 리시브 효율 · /S = 세트당</div>`;
+    }
+    if (p.history && p.history.length) html += `<div class="pf-hist">${p.history.map(h => `<div>· ${esc(h)}</div>`).join("")}</div>`;
+  } else html += `<div class="pf-more">눌러서 프로필 보기 ›</div>`;
+  return html + `</div>`;
+}
+function renderSquad() {
+  const p = document.getElementById("panel-squad");
+  const pr = (DATA.profiles || {}).teams || {};
+  const teams = ((DATA.teams && DATA.teams.teams) || []).map(t => t.name);
+  if (!SQ_TEAM || !teams.includes(SQ_TEAM)) SQ_TEAM = (MY_TEAM && teams.includes(MY_TEAM)) ? MY_TEAM : teams[0];
+  let html = `<h2 class="section-title">👥 선수단</h2>
+    <div class="stage-tabs">${teams.map(t => `<button class="stage-chip ${t === SQ_TEAM ? "active" : ""}" data-sq="${esc(t)}" style="${t === SQ_TEAM ? `background:${colorOf(t)};border-color:${colorOf(t)};color:#0b0f17` : ""}">${esc(t)}</button>`).join("")}</div>`;
+  const lst = pr[SQ_TEAM] || [];
+  if (!lst.length) {
+    html += emptyBox("선수 프로필을 아직 받지 못했어요. 자동 수집이 하루 한 번 KOVO에서 받아와요.");
+  } else {
+    const t = TEAM[SQ_TEAM] || {};
+    const n = lst.length, ages = lst.filter(x => x.age != null).map(x => x.age), hs = lst.filter(x => x.height).map(x => x.height);
+    const avg = (a) => a.length ? (a.reduce((x, y) => x + y, 0) / a.length).toFixed(1) : "-";
+    html += `<div class="pf-summary"><div><b>${n}명</b><span>등록 선수</span></div><div><b>${avg(ages)}세</b><span>평균 나이</span></div>
+      <div><b>${avg(hs)}cm</b><span>평균 키</span></div><div><b>${esc(t.coach || "-")}</b><span>감독</span></div>
+      <div><b>${lst.filter(x => x.foreign || x.asia).length}명</b><span>외국인·아쿼</span></div></div>`;
+    POS_ORDER.concat([""]).forEach(pos => {
+      const grp = lst.filter(x => pos ? x.pos === pos : !POS_ORDER.includes(x.pos));
+      if (!grp.length) return;
+      html += `<div class="sched-sub">${esc(POS_FULL[pos] || "기타")} <span class="hint" style="margin:0">${grp.length}명</span></div>
+        <div class="pf-grid">${grp.map(x => profileCard(SQ_TEAM, x)).join("")}</div>`;
+    });
+    html += `<p class="hint" style="margin-top:12px">출처: 한국배구연맹(KOVO) · ${esc((DATA.profiles || {}).updated_at || "")} 기준 · 사진 © KOVO</p>`;
+  }
+  p.innerHTML = html;
+  p.querySelectorAll("[data-sq]").forEach(b => b.onclick = () => { SQ_TEAM = b.dataset.sq; SQ_OPEN = null; renderSquad(); });
+  p.querySelectorAll(".pf-card").forEach(c => c.onclick = (e) => {
+    if (e.target.closest("a")) return;
+    SQ_OPEN = SQ_OPEN === c.dataset.pn ? null : c.dataset.pn; renderSquad();
+  });
 }
 
 /* ---------- 5. 경기장 ---------- */
@@ -590,6 +670,72 @@ function relayBlock(st, g) {
       ${lines}</div>`;
   }).join("");
 }
+/* 세트 흐름: 랠리마다 (원정 − 홈) 점수 차. 위 = 원정 리드, 아래 = 홈 리드 */
+function flowChart(st, g) {
+  const pts = [[0, 0, 0]];
+  let ph = 0, pa = 0;
+  (st.relay || []).forEach(e => {
+    if (e[4] !== ph || e[5] !== pa) { ph = e[4]; pa = e[5]; pts.push([pts.length, pa, ph]); }
+  });
+  if (pts.length < 3) return "";
+  // 최다 연속 득점
+  const run = { home: 0, away: 0 };
+  let cur = null, len = 0;
+  for (let i = 1; i < pts.length; i++) {
+    const who = pts[i][1] > pts[i - 1][1] ? "away" : "home";
+    len = who === cur ? len + 1 : 1; cur = who;
+    run[who] = Math.max(run[who], len);
+  }
+  const diffs = pts.map(p => p[1] - p[2]);
+  const M = Math.max(3, ...diffs.map(Math.abs));
+  const W = 600, H = 170, padL = 8, padR = 8, padT = 14, padB = 14;
+  const x = (i) => padL + (W - padL - padR) * i / (pts.length - 1);
+  const y = (d) => padT + (H - padT - padB) * (1 - (d + M) / (2 * M));
+  const line = diffs.map((d, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(d).toFixed(1)}`).join("");
+  const area = `${line}L${x(diffs.length - 1).toFixed(1)},${y(0)}L${x(0)},${y(0)}Z`;
+  const ca = colorOf(g.away), ch = colorOf(g.home);
+  const uid = "f" + Math.random().toString(36).slice(2, 8);
+  const grid = [M, Math.round(M / 2), -Math.round(M / 2), -M].filter((v, i, a) => v && a.indexOf(v) === i);
+  return `<div class="card flow-card">
+    <div class="flow-legend"><span><i style="background:${ca}"></i>${esc(g.away)} 리드 ▲</span><span><i style="background:${ch}"></i>${esc(g.home)} 리드 ▼</span></div>
+    <div class="flow-wrap" data-flow='${JSON.stringify(pts)}' data-away="${esc(g.away)}" data-home="${esc(g.home)}">
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="flow-svg" role="img" aria-label="세트 점수 차 흐름">
+      <defs>
+        <clipPath id="${uid}u"><rect x="0" y="0" width="${W}" height="${y(0)}"/></clipPath>
+        <clipPath id="${uid}d"><rect x="0" y="${y(0)}" width="${W}" height="${H - y(0)}"/></clipPath>
+      </defs>
+      ${grid.map(v => `<line x1="0" x2="${W}" y1="${y(v)}" y2="${y(v)}" class="flow-grid"/>`).join("")}
+      <path d="${area}" fill="${ca}" fill-opacity=".28" clip-path="url(#${uid}u)"/>
+      <path d="${area}" fill="${ch}" fill-opacity=".28" clip-path="url(#${uid}d)"/>
+      <line x1="0" x2="${W}" y1="${y(0)}" y2="${y(0)}" class="flow-zero"/>
+      <path d="${line}" class="flow-line" vector-effect="non-scaling-stroke"/>
+      <line class="flow-cross" x1="0" x2="0" y1="0" y2="${H}" style="display:none" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <div class="flow-tip" style="display:none"></div></div>
+    <div class="flow-foot">점선 = ${Math.round(M / 2)}점·${M}점 차 · 최다 연속 득점 · ${dot(g.away)}${esc(g.away)} <b>${run.away}점</b> &nbsp; ${dot(g.home)}${esc(g.home)} <b>${run.home}점</b> · 최대 점수 차 <b>${Math.max(...diffs.map(Math.abs))}점</b></div>
+  </div>`;
+}
+function bindFlow(root) {
+  root.querySelectorAll(".flow-wrap").forEach(w => {
+    const pts = JSON.parse(w.dataset.flow), svg = w.querySelector("svg"), tip = w.querySelector(".flow-tip"), cross = w.querySelector(".flow-cross");
+    const move = (ev) => {
+      const r = svg.getBoundingClientRect();
+      const cx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left;
+      const i = Math.max(0, Math.min(pts.length - 1, Math.round((cx - r.width * 8 / 600) / (r.width * 584 / 600) * (pts.length - 1))));
+      const px = (8 + 584 * i / (pts.length - 1));
+      cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.style.display = "";
+      const [n, a, h] = pts[i];
+      tip.innerHTML = `${n ? n + "번째 득점" : "시작"} · ${esc(w.dataset.away)} <b>${a}</b> : <b>${h}</b> ${esc(w.dataset.home)}`;
+      tip.style.display = "";
+      tip.style.left = Math.min(Math.max(px / 600 * r.width, 70), r.width - 70) + "px";
+    };
+    const hide = () => { tip.style.display = "none"; cross.style.display = "none"; };
+    w.addEventListener("mousemove", move); w.addEventListener("touchmove", move, { passive: true });
+    w.addEventListener("touchstart", move, { passive: true });
+    w.addEventListener("mouseleave", hide);
+  });
+}
+
 function renderGameModal() {
   const body = document.getElementById("gm-body");
   if (!GM.gid || !body) return;
@@ -628,6 +774,7 @@ function renderGameModal() {
       html += `<div class="gm-two">${blk(ta, g.away)}${blk(th, g.home)}</div><p class="hint" style="margin-top:6px">문자중계 기준 집계 (상대 범실 득점 제외)</p>`;
     }
     html += `<div class="stage-tabs td-tabs">${sets.map(n => `<button class="stage-chip ${n === GM.set ? "active" : ""}" data-gs="${n}">${n}세트${live && n === sets[sets.length - 1] ? " ●" : ""}</button>`).join("")}</div>`;
+    html += `<div class="sched-sub">📈 ${GM.set}세트 흐름</div>${flowChart(st, g) || '<div class="hint">득점이 쌓이면 그래프가 나와요.</div>'}`;
     html += `<div class="sched-sub">📋 ${GM.set}세트 선발 라인업</div>
       <div class="gm-two"><div class="card gm-card">${lineupBlock(st.lineup && st.lineup.away, g.away)}</div><div class="card gm-card">${lineupBlock(st.lineup && st.lineup.home, g.home)}</div></div>
       <p class="hint" style="margin-top:6px">1~6번 = 코트에 선 6명 (서브 순서), 아래 = 리베로·교체 명단</p>`;
@@ -636,12 +783,13 @@ function renderGameModal() {
   }
   body.innerHTML = html;
   body.querySelectorAll("[data-gs]").forEach(b => b.onclick = () => { GM.set = +b.dataset.gs; renderGameModal(); });
+  bindFlow(body);
   const ob = body.querySelector("[data-gord]");
   if (ob) ob.onclick = () => { GM.newestFirst = !GM.newestFirst; renderGameModal(); };
 }
 
 /* ---------- 탭 · 전체 렌더 ---------- */
-const RENDER = { myteam: renderMyTeam, schedule: renderSchedule, standings: renderStandings, spring: renderSpring, players: renderPlayers, arenas: renderArenas, teams: renderTeams, news: renderNews };
+const RENDER = { myteam: renderMyTeam, schedule: renderSchedule, standings: renderStandings, spring: renderSpring, players: renderPlayers, squad: renderSquad, arenas: renderArenas, teams: renderTeams, news: renderNews };
 let CUR_TAB = "schedule";
 function showTab(name) {
   CUR_TAB = name;
