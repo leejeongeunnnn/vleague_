@@ -259,6 +259,8 @@ def parse_naver(g):
         "venue": "" if (kind == "ps" and placeholder) else (g.get("stadium") or "").strip() or ("여수 진남체육관" if kind in ("cup", "allstar") else VENUES.get(home, "")),
         "state": state, "status": status,
     }
+    if g.get("gameOnAir"):
+        out["onair"] = True
     if g.get("neutralGround") or kind in ("cup", "allstar"):
         out["neutral"] = True
     if state in ("live", "final") and sh is not None and sa is not None:
@@ -766,6 +768,18 @@ def collect_profiles(force=False, max_age_h=20):
     return save("profiles.json", {"updated_at": now_kst().strftime("%Y-%m-%d %H:%M"), "source": "한국배구연맹(KOVO)", "teams": out})
 
 
+# ---------------------------------------------------------------- 생중계 링크
+def stream_info(det):
+    """경기 상세 응답에서 치지직 생중계 채널을 찾는다."""
+    g = (((det or {}).get("result") or {}).get("game")) or {}
+    cands = [g.get("chzzkLive")] + list(g.get("broadcastChzzkLives") or []) + list(g.get("chzzkLives") or [])
+    for c in cands:
+        if c and (c.get("chzzkChannelId") or c.get("channelId")):
+            cid = c.get("chzzkChannelId") or c.get("channelId")
+            return {"url": f"https://chzzk.naver.com/live/{cid}", "name": c.get("channelName") or "치지직 생중계"}
+    return None
+
+
 # ---------------------------------------------------------------- 실시간 (경기 중)
 def run_live():
     """오늘 경기만 받아 data/live.json 에 쓴다. 마지막 줄에 CONTINUE / STOP 출력."""
@@ -782,10 +796,22 @@ def run_live():
         p = parse_naver(g)
         if not p:
             continue
-        if p["state"] in ("live", "final") and "sets" not in p:
+        soon = False
+        if p["state"] == "scheduled" and p["time"]:
+            start = datetime.fromisoformat(f"{p['date']}T{p['time']}:00").replace(tzinfo=KST)
+            soon = start - now <= timedelta(minutes=90)
+        if p["state"] == "live" or soon or (p["state"] == "final" and "sets" not in p):
             s, det = naver_detail_sets(p["gid"])
-            if s:
+            if s and p["state"] != "scheduled":
                 p["sets"] = s
+            if det is None and p["state"] != "final":
+                try:
+                    det = get_json(f"{NAVER}/schedule/games/{p['gid']}", tries=1)
+                except Exception:  # noqa: BLE001
+                    det = None
+            st = stream_info(det)
+            if st and p["state"] != "final":
+                p["stream"] = st
             if p["state"] == "live" and sample is None:
                 sample = {"list": g, "detail": det}
         games.append(p)

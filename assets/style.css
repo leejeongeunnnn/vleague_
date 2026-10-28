@@ -489,3 +489,12 @@ table.rank th { line-height:1.25; }
 .flow-tip { position:absolute; top:-6px; transform:translate(-50%,-100%); background:#0b0f17; border:1px solid var(--border); border-radius:8px; padding:4px 8px; font-size:.74rem; white-space:nowrap; pointer-events:none; z-index:2; }
 .flow-foot { font-size:.74rem; color:var(--muted); margin-top:6px; }
 .flow-foot b { color:var(--text); }
+
+/* ---------- 생중계 · 예매 버튼 ---------- */
+.wbtns { display:flex; gap:6px; flex-wrap:wrap; }
+.gm-head .wbtns { justify-content:center; margin-top:10px; }
+.wbtn { display:inline-flex; align-items:center; gap:4px; font-size:.76rem; font-weight:700; padding:6px 11px; border-radius:999px;
+        border:1px solid var(--border); background:var(--card-2); color:var(--text); text-decoration:none; white-space:nowrap; }
+.wbtn:hover { border-color:#475569; }
+.wbtn.live { background:var(--loss); border-color:var(--loss); color:#fff; }
+.wbtn.ticket { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); color:#fcd34d; }

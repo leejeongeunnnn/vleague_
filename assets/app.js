@@ -160,6 +160,7 @@ function gameCard(g, opts = {}) {
   }
   const status = live ? (g.status || "경기 중") : fin ? (g.status || "경기 종료") : g.state === "cancel" ? (g.status || "취소") : (g.time ? `${g.time} 시작` : "시간 미정");
   const canOpen = (live || fin) && g.gid && !String(g.gid).startsWith("seed");
+  const watch = watchLinks(g);
   const more = canOpen ? ` <b class="more">${live ? "문자중계 ›" : "상세 ›"}</b>` : "";
   return `<div class="game ${live ? "is-live" : ""} ${mine ? "is-mine" : ""} ${canOpen ? "clickable" : ""}"${canOpen ? ` data-gid="${esc(g.gid)}" role="button" tabindex="0"` : ""}>
     ${(uniq.length || live || mine || opts.showDate) ? `<div class="series">${mine ? '<span class="mine-star">⭐</span> ' : ""}${live ? '<span class="live-pill">LIVE</span> ' : ""}${opts.showDate ? `<span class="g-date">${esc(dateLabel(g.date))}</span> ` : ""}${esc(uniq.join(" · "))}</div>` : ""}
@@ -172,11 +173,36 @@ function gameCard(g, opts = {}) {
       <span class="game-score ${hw}">${sc(g.sh)}</span>
     </div>
     ${sets}
+    ${watch}
     <div class="game-meta">
       <span>${esc(g.venue || "")}</span>
       <span class="${live ? "status-live" : ""}">${esc(status)}${more}</span>
     </div>
   </div>`;
+}
+
+/* 생중계 · 예매 버튼 */
+const NAVER_GAME = (gid) => `https://m.sports.naver.com/game/${encodeURIComponent(gid)}`;
+function watchLinks(g, big) {
+  if (!g.gid || String(g.gid).startsWith("seed")) return "";
+  const btns = [];
+  const today = todayStr();
+  if (g.state === "live") {
+    if (g.stream && g.stream.url) btns.push(`<a class="wbtn live" href="${esc(g.stream.url)}" target="_blank" rel="noopener">▶ 생중계 보기</a>`);
+    else btns.push(`<a class="wbtn live" href="${NAVER_GAME(g.gid)}" target="_blank" rel="noopener">▶ 네이버 중계</a>`);
+  } else if (g.state === "scheduled" && g.date === today && g.stream && g.stream.url) {
+    btns.push(`<a class="wbtn" href="${esc(g.stream.url)}" target="_blank" rel="noopener">📺 중계 채널</a>`);
+  }
+  if (g.state === "scheduled" && g.date >= today && g.kind === "regular" && !g.neutral) {
+    const tk = ticketOf(g.home);
+    if (tk) btns.push(`<a class="wbtn ticket" href="${esc(tk.url)}" target="_blank" rel="noopener">🎟️ 예매</a>`);
+  }
+  if (big && g.state === "final") btns.push(`<a class="wbtn" href="${NAVER_GAME(g.gid)}/video" target="_blank" rel="noopener">🎬 하이라이트</a>`);
+  return btns.length ? `<div class="wbtns">${btns.join("")}</div>` : "";
+}
+function ticketOf(team) {
+  const t = (TEAM[team] || {}).ticket;
+  return t && t.url ? t : null;
 }
 
 /* ---------- 1. 경기 일정 ---------- */
@@ -755,6 +781,7 @@ function renderGameModal() {
         <div class="gm-t ${+g.sh > +g.sa ? "win" : ""}">${dot(g.home)}${esc(g.home)}<small>${g.neutral ? "&nbsp;" : "홈"}</small></div>
       </div>
       <div class="td-status ${live ? "on" : ""}">${live ? `<span class="live-dot"></span> ${esc(g.status || "경기 중")} · 1분마다 갱신` : esc(g.status || "")}</div>
+      ${watchLinks(g, true)}
     </div>`;
   if (Array.isArray(g.sets) && g.sets.length) {
     html += `<table class="gm-line"><thead><tr><th></th>${setScore}<th>세트</th></tr></thead><tbody>
@@ -823,6 +850,7 @@ function scheduleRefresh() {
   document.querySelectorAll(".tab").forEach(t => t.onclick = () => showTab(t.dataset.tab));
   document.getElementById("myteam-chip").onclick = () => showTab("myteam");
   document.addEventListener("click", (e) => {
+    if (e.target.closest("a")) return;
     const c = e.target.closest(".game.clickable[data-gid]");
     if (c) openGame(c.dataset.gid);
   });
