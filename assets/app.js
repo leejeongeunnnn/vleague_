@@ -160,9 +160,11 @@ function gameCard(g, opts = {}) {
       `<span title="${i + 1}세트" class="${live && i === g.sets.length - 1 ? "cur" : ""}"><b class="${+s[1] > +s[0] ? "w" : ""}">${esc(s[1])}</b><i>:</i><b class="${+s[0] > +s[1] ? "w" : ""}">${esc(s[0])}</b></span>`).join("")}</div>`;
   }
   const status = live ? (g.status || "경기 중") : fin ? (g.status || "경기 종료") : g.state === "cancel" ? (g.status || "취소") : (g.time ? `${g.time} 시작` : "시간 미정");
-  const canOpen = (live || fin) && g.gid && !String(g.gid).startsWith("seed");
+  const realTeams = !!(TEAM[g.home] && TEAM[g.away]);
+  const preview = g.state === "scheduled" && realTeams;
+  const canOpen = (live || fin || preview) && g.gid && !String(g.gid).startsWith("seed");
   const watch = watchLinks(g);
-  const more = canOpen ? ` <b class="more">${live ? "문자중계 ›" : "상세 ›"}</b>` : "";
+  const more = canOpen ? ` <b class="more">${live ? "문자중계 ›" : fin ? "상세 ›" : "미리보기 ›"}</b>` : "";
   return `<div class="game ${live ? "is-live" : ""} ${mine ? "is-mine" : ""} ${canOpen ? "clickable" : ""}"${canOpen ? ` data-gid="${esc(g.gid)}" role="button" tabindex="0"` : ""}>
     ${(uniq.length || live || mine || opts.showDate) ? `<div class="series">${mine ? '<span class="mine-star">⭐</span> ' : ""}${live ? '<span class="live-pill">LIVE</span> ' : ""}${opts.showDate ? `<span class="g-date">${esc(dateLabel(g.date))}</span> ` : ""}${esc(uniq.join(" · "))}</div>` : ""}
     <div class="game-row">
@@ -307,12 +309,14 @@ function renderStandings() {
   } else {
     html += emptyBox("정규시즌이 10월 31일에 시작해요. 첫 경기가 끝나면 이 자리에 순위표가 나옵니다.");
   }
+  html += rankChartHtml();
   const ls = DATA.last_season;
   if (ls) {
     html += `<div class="sched-sub">📜 지난 시즌 최종 순위 (${esc(ls.season)})</div>`;
     html += rankTable(ls.standings.map(r => ({ ...r })), { foot: "대한항공·현대캐피탈 승점 69 동률 → 다승으로 대한항공 1위" });
   }
   p.innerHTML = html;
+  bindRankChart(p);
 }
 
 /* ---------- 3. 봄배구 · 컵대회 ---------- */
@@ -397,6 +401,7 @@ function renderPlayers() {
   } else {
     html += emptyBox("이번 시즌 개인 기록은 정규시즌 개막(10월 31일) 후 경기 결과가 쌓이면 표시됩니다.");
   }
+  html += compareHtml();
   const ls = DATA.last_season;
   if (ls && ls.awards) {
     html += `<div class="sched-sub">🏅 지난 시즌 (${esc(ls.season)}) 시상</div><div class="card">${ls.awards.map(a =>
@@ -406,6 +411,7 @@ function renderPlayers() {
   p.querySelectorAll("[data-pc]").forEach(b => b.onclick = () => { PL_CAT = b.dataset.pc; PL_SORT = null; renderPlayers(); });
   p.querySelectorAll("th[data-ps]").forEach(th => th.onclick = () => { PL_SORT = th.dataset.ps; renderPlayers(); });
   p.querySelectorAll(".plink").forEach(a => a.onclick = () => openProfile(a.dataset.pteam, a.dataset.pname));
+  p.querySelectorAll("[data-cmp]").forEach(se => se.onchange = () => { CMP[+se.dataset.cmp] = se.value; renderPlayers(); });
 }
 
 /* ---------- 선수단 · 프로필 ---------- */
@@ -643,6 +649,8 @@ async function openGame(gid) {
   document.body.classList.add("gm-lock");
   document.getElementById("game-modal").classList.add("open");
   renderGameModal();
+  const g0 = allGames().find(x => x.gid === gid);
+  if (g0 && g0.state === "scheduled") return;
   if (!liveRelay(gid)) {
     GM.loading = true; renderGameModal();
     try {
@@ -787,6 +795,7 @@ function renderGameModal() {
   if (!GM.gid || !body || GM.gid === "__price") return;
   const g = allGames().find(x => x.gid === GM.gid);
   if (!g) { body.innerHTML = emptyBox("경기 정보를 찾을 수 없어요."); return; }
+  if (g.state === "scheduled") { body.innerHTML = previewHtml(g); return; }
   const R = liveRelay(g.gid) || GM.relay;
   const live = g.state === "live";
   const sets = R && R.sets ? Object.keys(R.sets).map(Number).sort((a, b) => a - b) : [];
@@ -835,6 +844,227 @@ function renderGameModal() {
   if (ob) ob.onclick = () => { GM.newestFirst = !GM.newestFirst; renderGameModal(); };
 }
 
+/* ---------- 경기 미리보기 ---------- */
+function profileOf(team, name) {
+  return (((DATA.profiles || {}).teams || {})[team] || []).find(p => p.name === name) || null;
+}
+function teamForm(team, n = 5) {
+  return allGames().filter(g => g.state === "final" && (g.home === team || g.away === team)).slice(-n).map(g => {
+    const mine = g.home === team ? +g.sh : +g.sa, op = g.home === team ? +g.sa : +g.sh;
+    return { g, win: mine > op, mine, op, opp: g.home === team ? g.away : g.home };
+  });
+}
+function previewHtml(g) {
+  const A = g.away, H = g.home;
+  const cur = seasonTable();
+  const last = (DATA.last_season && DATA.last_season.standings) || [];
+  const rowOf = (t) => cur ? cur.rows.find(r => r.team === t) : null;
+  const lastOf = (t) => last.find(r => r.team === t);
+  const today = todayStr(), dd = daysBetween(today, g.date);
+  let html = `<div class="gm-head">
+    <div class="gm-meta">${esc(dateLabel(g.date))} ${esc(g.time || "")} · ${esc(g.venue || "")} · ${esc(g.series || KIND_LABEL[g.kind] || "")}</div>
+    <div class="gm-score">
+      <div class="gm-t win">${dot(A)}${esc(A)}<small>원정</small></div>
+      <b class="td-vs">VS</b>
+      <div class="gm-t win">${dot(H)}${esc(H)}<small>${g.neutral ? "&nbsp;" : "홈"}</small></div>
+    </div>
+    <div class="td-status">${dd === 0 ? "오늘 경기" : dd > 0 ? `D-${dd}` : ""} · 경기 미리보기</div>
+    ${watchLinks(g, true)}
+  </div>`;
+
+  // 시즌 성적 비교
+  const statBox = (t) => {
+    const r = rowOf(t), l = lastOf(t), f = teamForm(t);
+    return `<div class="card gm-card pv-team" style="border-top:3px solid ${colorOf(t)}">
+      <div class="mt-ph">${dot(t)}${esc(t)}</div>
+      ${r ? `<div class="pv-big">${r.rank}<small>위</small></div><div class="pv-sub">${r.w}승 ${r.l}패 · 승점 ${r.pts}</div>`
+          : `<div class="pv-big">-</div><div class="pv-sub">정규리그 시작 전</div>`}
+      ${l ? `<div class="pv-sub">지난 시즌 ${l.rank}위 (${l.w}승 ${l.l}패)</div>` : ""}
+      <div class="form-row" style="margin:8px 0 0">${f.length ? f.map(x => `<span class="form-chip sm ${x.win ? "W" : "L"}" title="${esc(x.g.date)} vs ${esc(x.opp)} ${x.mine}:${x.op}">${x.win ? "승" : "패"}</span>`).join("") : '<span class="hint" style="margin:0">최근 경기 없음</span>'}</div>
+      <div class="pv-sub" style="margin-top:2px">최근 ${f.length}경기 (컵대회 포함)</div>
+    </div>`;
+  };
+  html += `<div class="sched-sub">📊 두 팀 지금</div><div class="gm-two">${statBox(A)}${statBox(H)}</div>`;
+
+  // 상대 전적
+  const meet = allGames().filter(x => x.state === "final" && ((x.home === A && x.away === H) || (x.home === H && x.away === A)));
+  const aw = meet.filter(x => (x.home === A ? +x.sh : +x.sa) > (x.home === A ? +x.sa : +x.sh)).length;
+  html += `<div class="sched-sub">⚔️ 이번 시즌 맞대결</div><div class="card">`;
+  if (meet.length) {
+    html += `<div class="pv-h2h"><span>${dot(A)}<b>${esc(A)}</b></span><b class="pv-h2h-n">${aw} : ${meet.length - aw}</b><span><b>${esc(H)}</b>${dot(H)}</span></div>
+      ${meet.slice().reverse().map(x => {
+        const sa = x.home === A ? x.sh : x.sa, sh = x.home === A ? x.sa : x.sh;
+        return `<div class="mt-pl clickable" data-gid="${esc(x.gid)}"><span class="mt-date">${esc(x.date.slice(5).replace("-", "/"))} · ${esc(KIND_LABEL[x.kind] || "")}${x.series ? " " + esc(x.series.replace("컵대회 ", "")) : ""}</span><span class="num"><b>${sa} : ${sh}</b> ›</span></div>`;
+      }).join("")}`;
+  } else html += `<div class="hint" style="margin:0">이번 시즌 첫 맞대결이에요.</div>`;
+  // 지난 시즌 봄배구 맞대결
+  const ps = ((DATA.last_season || {}).postseason || []).filter(st => {
+    const ser = st.series || [];
+    const inSeries = ser.some(x => [x.home, x.away].includes(A) && [x.home, x.away].includes(H));
+    const inSummary = st.summary && st.summary.includes(A) && st.summary.includes(H);
+    const finalPair = st.stage === "챔피언결정전" && [A, H].includes(st.winner) && ((DATA.last_season || {}).standings || []).slice(0, 2).every(r => [A, H].includes(r.team));
+    return inSeries || inSummary || finalPair;
+  });
+  if (ps.length) html += `<div class="pv-note">📜 지난 시즌 ${ps.map(st => `${esc(st.stage)}에서 만나 <b>${esc(st.winner)}</b> 승리${st.summary ? ` (${esc(st.summary)})` : ""}`).join(" · ")}</div>`;
+  html += `</div>`;
+
+  // 주목할 선수
+  const all = (DATA.players || {}).all || [];
+  const scope = (DATA.players || {}).scope || "";
+  const keyBox = (t) => {
+    const lst = all.filter(r => r.team === t).sort((a, b) => b.pts - a.pts).slice(0, 3);
+    return `<div class="card gm-card"><div class="mt-ph">${dot(t)}${esc(t)}</div>${lst.length ? lst.map(r => {
+      const pf = profileOf(t, r.name);
+      return `<div class="pv-pl" data-pteam="${esc(t)}" data-pname="${esc(r.name)}">
+        ${pf && pf.img ? `<img class="pf-img sm" src="${esc(pf.img)}" alt="" loading="lazy" onerror="this.remove()">` : `<span class="pf-img sm ph"></span>`}
+        <div><b>${esc(r.name)}</b> <span class="lu-pos" style="margin:0">${esc(r.pos)}</span>
+        <div class="pv-sub">${r.pts}점 · 세트당 ${r.pts_ps} · 공격 ${r.atk_pct}%</div></div></div>`;
+    }).join("") : '<div class="hint" style="margin:0">기록 없음</div>'}</div>`;
+  };
+  html += `<div class="sched-sub">⭐ 주목할 선수 <span class="hint" style="margin:0">${esc(scope)} 득점 순</span></div><div class="gm-two">${keyBox(A)}${keyBox(H)}</div>`;
+
+  // 외국인 · 아시아쿼터
+  const fx = (t) => (((DATA.profiles || {}).teams || {})[t] || []).filter(p => p.foreign || p.asia)
+    .map(p => `${esc(p.name)} <span class="lu-pos" style="margin:0">${p.asia ? "아시아쿼터" : "외국인"} · ${esc(POS_FULL[p.pos] || p.pos)}${p.nation ? " · " + esc(p.nation) : ""}</span>`).join("<br>") || "-";
+  html += `<div class="sched-sub">🌏 외국인 · 아시아쿼터</div><div class="gm-two"><div class="card gm-card"><div class="mt-ph">${dot(A)}${esc(A)}</div><div class="pv-fx">${fx(A)}</div></div><div class="card gm-card"><div class="mt-ph">${dot(H)}${esc(H)}</div><div class="pv-fx">${fx(H)}</div></div></div>`;
+  html += `<p class="hint" style="margin-top:10px">세트별 선발 라인업과 문자중계는 경기가 시작되면 이 창에 나와요.</p>`;
+  return html;
+}
+
+/* ---------- 순위 변동 그래프 ---------- */
+let RC_MODE = "rank", RC_FOCUS = null;
+function rankHistory() {
+  const reg = allGames().filter(g => g.kind === "regular" && g.state === "final");
+  if (!reg.length) return null;
+  const teams = Object.keys(TEAM);
+  const dates = [...new Set(reg.map(g => g.date))].sort();
+  return dates.map(d => {
+    const rows = computeTable(reg.filter(g => g.date <= d), teams);
+    return { date: d, rows: Object.fromEntries(rows.map(r => [r.team, { rank: r.rank, pts: r.pts, w: r.w, l: r.l }])) };
+  });
+}
+function rankChartHtml() {
+  const hist = rankHistory();
+  if (!hist || hist.length < 2) return `<div class="sched-sub">📈 순위 변동</div>` + emptyBox(hist ? "경기일이 이틀 이상 쌓이면 순위 변동 그래프가 나와요." : "정규리그가 시작되면 날짜별 순위 변동 그래프가 나와요.");
+  const teams = Object.keys(TEAM);
+  if (!RC_FOCUS || !teams.includes(RC_FOCUS)) RC_FOCUS = (MY_TEAM && teams.includes(MY_TEAM)) ? MY_TEAM : hist[hist.length - 1] && Object.entries(hist[hist.length - 1].rows).sort((a, b) => a[1].rank - b[1].rank)[0][0];
+  const isRank = RC_MODE === "rank";
+  // 숨겨진 탭에서도 그려지므로 화면 너비 기준 (본문 최대 1080px, 여백·카드 안쪽 여백 제외)
+  const W = Math.round(Math.max(300, Math.min(720, Math.min(window.innerWidth, 1080) - 66))), H = W < 480 ? 300 : 280, pL = 26, pR = W < 480 ? 92 : 110, pT = 14, pB = 26;
+  const n = hist.length;
+  const maxPts = Math.max(3, ...hist.flatMap(h => Object.values(h.rows).map(r => r.pts)));
+  const x = (i) => pL + (W - pL - pR) * (n === 1 ? 0.5 : i / (n - 1));
+  const y = (v) => isRank ? pT + (H - pT - pB) * (v - 1) / (teams.length - 1) : pT + (H - pT - pB) * (1 - v / maxPts);
+  const val = (r) => isRank ? r.rank : r.pts;
+  const ticks = isRank ? teams.map((_, i) => i + 1) : [0, Math.round(maxPts / 2), maxPts];
+  const xt = [0, Math.floor((n - 1) / 2), n - 1].filter((v, i, a) => a.indexOf(v) === i);
+  // 끝 라벨 겹침 방지
+  const ends = teams.map(t => ({ t, y: y(val(hist[n - 1].rows[t])) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 13) ends[i].y = ends[i - 1].y + 13;
+  const endY = Object.fromEntries(ends.map(e => [e.t, e.y]));
+  const order = teams.filter(t => t !== RC_FOCUS).concat([RC_FOCUS]);
+  const lines = order.map(t => {
+    const f = t === RC_FOCUS, c = f ? colorOf(t) : "#475569";
+    const d = hist.map((h, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(val(h.rows[t])).toFixed(1)}`).join("");
+    const last = hist[n - 1].rows[t];
+    return `<path d="${d}" fill="none" stroke="${c}" stroke-width="${f ? 3 : 1.5}" stroke-linejoin="round" stroke-linecap="round" opacity="${f ? 1 : .9}"/>
+      ${f ? hist.map((h, i) => `<circle cx="${x(i)}" cy="${y(val(h.rows[t]))}" r="4" fill="${c}" stroke="#1c2230" stroke-width="2"/>`).join("") : ""}
+      <text x="${W - pR + 8}" y="${endY[t] + 4}" class="rc-lab ${f ? "f" : ""}" ${f ? `fill="${c}"` : ""}>${esc(t)} ${isRank ? last.rank + "위" : last.pts}</text>`;
+  }).join("");
+  return `<div class="sched-sub">📈 ${isRank ? "순위" : "승점"} 변동 <span style="margin-left:auto;display:flex;gap:6px">
+      <button class="stage-chip ${isRank ? "active" : ""}" data-rcm="rank">순위</button><button class="stage-chip ${!isRank ? "active" : ""}" data-rcm="pts">승점</button></span></div>
+    <div class="card">
+      <div class="stage-tabs" style="margin-bottom:8px">${teams.map(t => `<button class="stage-chip ${t === RC_FOCUS ? "active" : ""}" data-rcf="${esc(t)}" style="${t === RC_FOCUS ? `background:${colorOf(t)};border-color:${colorOf(t)};color:#0b0f17` : ""}">${esc(t)}</button>`).join("")}</div>
+      <div class="rc-wrap" data-n="${n}" data-w="${W}" data-pr="${pR}">
+      <svg viewBox="0 0 ${W} ${H}" class="rc-svg" role="img" aria-label="${isRank ? "순위" : "승점"} 변동 그래프">
+        ${ticks.map(v => `<line x1="${pL}" x2="${W - pR}" y1="${y(v)}" y2="${y(v)}" class="flow-grid"/><text x="${pL - 6}" y="${y(v) + 4}" class="rc-tick" text-anchor="end">${v}${isRank ? "" : ""}</text>`).join("")}
+        ${xt.map(i => `<text x="${x(i)}" y="${H - 6}" class="rc-tick" text-anchor="middle">${hist[i].date.slice(5).replace("-", "/")}</text>`).join("")}
+        ${lines}
+        <line class="rc-cross" x1="0" x2="0" y1="${pT}" y2="${H - pB}" style="display:none"/>
+      </svg>
+      <div class="flow-tip rc-tip" style="display:none"></div></div>
+      <div class="hint" style="margin:6px 0 0">선택한 팀만 색으로 강조 · 그래프를 훑으면 그날의 전체 순위</div>
+    </div>`;
+}
+function bindRankChart(root) {
+  root.querySelectorAll("[data-rcm]").forEach(b => b.onclick = () => { RC_MODE = b.dataset.rcm; renderStandings(); });
+  root.querySelectorAll("[data-rcf]").forEach(b => b.onclick = () => { RC_FOCUS = b.dataset.rcf; renderStandings(); });
+  const w = root.querySelector(".rc-wrap");
+  if (!w) return;
+  const hist = rankHistory(), n = hist.length, svg = w.querySelector("svg"), tip = w.querySelector(".rc-tip"), cross = w.querySelector(".rc-cross");
+  const W = +w.dataset.w, pL = 26, pR = +w.dataset.pr;
+  const move = (ev) => {
+    const r = svg.getBoundingClientRect(), sc = r.width / W;
+    const cx = ((ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left) / sc;
+    const i = Math.max(0, Math.min(n - 1, Math.round((cx - pL) / ((W - pL - pR) / Math.max(1, n - 1)))));
+    const px = pL + (W - pL - pR) * (n === 1 ? 0.5 : i / (n - 1));
+    cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.style.display = "";
+    const rows = Object.entries(hist[i].rows).sort((a, b) => a[1].rank - b[1].rank);
+    tip.innerHTML = `<b>${esc(dateLabel(hist[i].date))}</b>` + rows.map(([t, v]) => `<div class="${t === RC_FOCUS ? "f" : ""}">${v.rank}. ${dot(t)}${esc(t)} <span>${v.pts}점 · ${v.w}승 ${v.l}패</span></div>`).join("");
+    tip.style.display = "";
+    tip.style.left = Math.min(Math.max(px * sc, 95), r.width - 95) + "px";
+  };
+  const hide = () => { tip.style.display = "none"; cross.style.display = "none"; };
+  w.addEventListener("mousemove", move); w.addEventListener("touchstart", move, { passive: true }); w.addEventListener("touchmove", move, { passive: true });
+  w.addEventListener("mouseleave", hide);
+}
+
+/* ---------- 선수 비교 ---------- */
+let CMP = [null, null];
+const CMP_METRICS = [
+  ["pts", "득점", 0], ["pts_ps", "세트당 득점", 2], ["atk_pct", "공격 성공률 %", 1], ["blk_ps", "세트당 블로킹", 2],
+  ["ace_ps", "세트당 서브 에이스", 2], ["dig_ps", "세트당 디그", 2], ["rcv_eff", "리시브 효율 %", 1], ["set_ps", "세트당 세트", 2],
+];
+function cmpKey(r) { return r.team + "|" + r.name; }
+function compareHtml() {
+  const all = ((DATA.players || {}).all || []).slice().sort((a, b) => a.team.localeCompare(b.team) || b.pts - a.pts);
+  if (!all.length) return "";
+  const byKey = Object.fromEntries(all.map(r => [cmpKey(r), r]));
+  const top = all.slice().sort((a, b) => b.pts - a.pts);
+  if (!CMP[0] || !byKey[CMP[0]]) CMP[0] = cmpKey(top[0]);
+  if (!CMP[1] || !byKey[CMP[1]]) CMP[1] = cmpKey(top.find(r => cmpKey(r) !== CMP[0]));
+  const P = CMP.map(k => byKey[k]);
+  const teams = [...new Set(all.map(r => r.team))];
+  const sel = (i) => `<select class="cmp-sel" data-cmp="${i}">${teams.map(t => `<optgroup label="${esc(t)}">${all.filter(r => r.team === t).map(r =>
+    `<option value="${esc(cmpKey(r))}" ${cmpKey(r) === CMP[i] ? "selected" : ""}>${esc(r.name)} (${esc(r.pos || "-")})</option>`).join("")}</optgroup>`).join("")}</select>`;
+  const colA = colorOf(P[0].team), colB = P[0].team === P[1].team ? "#94a3b8" : colorOf(P[1].team);
+  const head = (r, i) => {
+    const pf = profileOf(r.team, r.name);
+    const meta = pf ? [pf.age != null ? pf.age + "세" : "", pf.height ? pf.height + "cm" : ""].filter(Boolean).join(" · ") : "";
+    return `<div class="cmp-head">
+      ${pf && pf.img ? `<img class="pf-img" src="${esc(pf.img)}" alt="" loading="lazy" onerror="this.remove()">` : `<span class="pf-img ph"></span>`}
+      <div class="pf-name" style="color:${i ? colB : colA}">${esc(r.name)}</div><div class="pv-sub">${dot(r.team)}${esc(r.team)}</div>
+      <div class="pv-sub">${esc(r.pos || "")}${meta ? " · " + meta : ""}</div><div class="pv-sub">${r.g}경기 ${r.s}세트</div></div>`;
+  };
+  const lgMax = (k) => Math.max(...all.filter(r => r.s >= 3).map(r => +r[k] || 0), 0.0001);
+  const bars = CMP_METRICS.filter(([k]) => (+P[0][k] || 0) + (+P[1][k] || 0) > 0).map(([k, label, d]) => {
+    const m = Math.max(lgMax(k), +P[0][k], +P[1][k]);
+    const a = Math.max(0, +P[0][k] || 0), b = Math.max(0, +P[1][k] || 0);
+    const win = a === b ? -1 : a > b ? 0 : 1;
+    return `<div class="cmp-row">
+      <div class="cmp-v ${win === 0 ? "w" : ""}">${a.toFixed(d)}</div>
+      <div class="cmp-bar l"><i style="width:${(a / m * 100).toFixed(1)}%;background:${colA}"></i></div>
+      <div class="cmp-lab">${esc(label)}</div>
+      <div class="cmp-bar"><i style="width:${(b / m * 100).toFixed(1)}%;background:${colB}"></i></div>
+      <div class="cmp-v ${win === 1 ? "w" : ""}">${b.toFixed(d)}</div></div>`;
+  }).join("");
+  const lastReg = (r) => { const pf = profileOf(r.team, r.name); return pf && (pf.career || []).find(c => /\[정\]/.test(c.season || "")); };
+  const L = P.map(lastReg);
+  const lrow = (label, k, d) => `<tr><td>${L[0] ? fmtN(L[0][k], d) : "-"}</td><td class="l" style="text-align:center;color:var(--muted)">${label}</td><td>${L[1] ? fmtN(L[1][k], d) : "-"}</td></tr>`;
+  return `<div class="sched-sub">⚖️ 선수 비교</div>
+    <div class="card">
+      <div class="cmp-pick">${sel(0)}<span class="hint" style="margin:0">vs</span>${sel(1)}</div>
+      <div class="cmp-heads">${head(P[0], 0)}${head(P[1], 1)}</div>
+      <div class="cmp-bars">${bars}</div>
+      <div class="hint" style="margin:6px 0 0">${esc((DATA.players || {}).scope || "")} 기록 · 막대 길이 = 리그 최고 대비 · 더 높은 쪽 숫자 강조</div>
+      ${(L[0] || L[1]) ? `<div class="mt-ph" style="margin-top:12px">지난 정규리그 (KOVO 공식)</div>
+        <table class="gm-tbl"><thead><tr><th>${esc(P[0].name)}</th><th></th><th>${esc(P[1].name)}</th></tr></thead><tbody>
+        <tr><td>${L[0] ? esc(seasonShort(L[0].season)) : "-"}</td><td class="l" style="text-align:center;color:var(--muted)">시즌</td><td>${L[1] ? esc(seasonShort(L[1].season)) : "-"}</td></tr>
+        ${lrow("경기", "g", 0)}${lrow("득점", "pts", 0)}${lrow("공격 성공률 %", "atk", 1)}${lrow("세트당 블로킹", "blk", 2)}${lrow("세트당 서브", "srv", 2)}${lrow("리시브 효율 %", "rcv", 1)}${lrow("세트당 디그", "dig", 2)}
+        </tbody></table>` : ""}
+    </div>`;
+}
+
 /* ---------- 탭 · 전체 렌더 ---------- */
 const RENDER = { myteam: renderMyTeam, schedule: renderSchedule, standings: renderStandings, spring: renderSpring, players: renderPlayers, squad: renderSquad, arenas: renderArenas, teams: renderTeams, news: renderNews };
 let CUR_TAB = "schedule";
@@ -871,6 +1101,10 @@ function scheduleRefresh() {
   document.getElementById("myteam-chip").onclick = () => showTab("myteam");
   document.addEventListener("click", (e) => {
     if (e.target.closest("a")) return;
+    const mp = e.target.closest("#gm-body .mt-pl.clickable[data-gid]");
+    if (mp) { openGame(mp.dataset.gid); return; }
+    const pv = e.target.closest("#gm-body .pv-pl[data-pname]");
+    if (pv) { closeGame(); openProfile(pv.dataset.pteam, pv.dataset.pname); return; }
     const c = e.target.closest(".game.clickable[data-gid]");
     if (c) openGame(c.dataset.gid);
   });

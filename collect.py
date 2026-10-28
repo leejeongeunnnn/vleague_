@@ -641,10 +641,19 @@ def build_player_stats(games):
     roster = collections.defaultdict(list)
     for r in sorted(rows, key=lambda r: -r["s"]):
         roster[r["team"]].append({"name": r["name"], "pos": r["pos"], "g": r["g"], "s": r["s"], "pts": r["pts"]})
+    # 선수 비교용 전체 기록 (모든 출전 선수)
+    allrows = []
+    for r in rows:
+        allrows.append({"name": r["name"], "team": r["team"], "pos": r["pos"], "g": r["g"], "s": r["s"], "pts": r["pts"],
+                        "atk": r["atk"], "atk_ok": r["atk_ok"], "atk_err": r["atk_err"], "atk_pct": pct(r["atk_ok"], r["atk"]),
+                        "blk": r["blk_ok"], "blk_ps": per(r["blk_ok"], r["s"]), "srv": r["srv"], "ace": r["srv_ok"],
+                        "srv_err": r["srv_err"], "ace_ps": per(r["srv_ok"], r["s"]), "dig": r["dig_ok"], "dig_ps": per(r["dig_ok"], r["s"]),
+                        "set_ok": r["set_ok"], "set_ps": per(r["set_ok"], r["s"]), "rcv": r["rcv"],
+                        "rcv_eff": pct(r["rcv_ok"] - r["rcv_fail"], r["rcv"]), "pts_ps": per(r["pts"], r["s"])})
     STATUS["players"] = f"{scope} {len(use)}경기 · {len(rows)}명"
     return save("players.json", {"season": SEASON, "scope": scope, "games": len(use),
                                  "source": f"네이버 문자중계 집계 · {scope} {len(use)}경기",
-                                 "categories": cats, "roster": dict(roster)})
+                                 "categories": cats, "roster": dict(roster), "all": allrows})
 
 
 # ---------------------------------------------------------------- 선수 프로필 (KOVO 공식 API)

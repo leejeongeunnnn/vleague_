@@ -499,3 +499,54 @@ table.rank th { line-height:1.25; }
 .wbtn.live { background:var(--loss); border-color:var(--loss); color:#fff; }
 .wbtn.ticket { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); color:#fcd34d; }
 .price-img { width:100%; border-radius:12px; background:#fff; display:block; min-height:200px; }
+
+/* ---------- 경기 미리보기 ---------- */
+.pv-big { font-size:1.8rem; font-weight:800; line-height:1.1; font-variant-numeric:tabular-nums; }
+.pv-big small { font-size:.85rem; color:var(--muted); margin-left:2px; }
+.pv-sub { font-size:.74rem; color:var(--muted); line-height:1.5; }
+.pv-h2h { display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:.86rem; margin-bottom:6px; }
+.pv-h2h-n { font-size:1.5rem; font-variant-numeric:tabular-nums; }
+.pv-note { margin-top:8px; font-size:.78rem; color:#cdd6e4; border-top:1px dashed var(--border); padding-top:8px; line-height:1.6; }
+.pv-pl { display:flex; align-items:center; gap:10px; padding:6px 0; border-top:1px solid var(--border); cursor:pointer; font-size:.85rem; }
+.pv-pl:first-of-type { border-top:none; }
+.pf-img.sm { width:38px; height:38px; }
+.pf-img.ph { display:inline-block; }
+.pv-fx { font-size:.82rem; line-height:1.9; }
+.mt-pl.clickable { cursor:pointer; }
+.mt-pl.clickable:hover b { color:var(--accent); }
+
+/* ---------- 순위 변동 그래프 ---------- */
+.rc-wrap { position:relative; }
+.rc-svg { width:100%; height:auto; display:block; overflow:visible; }
+.rc-tick { fill:var(--muted); font-size:11px; }
+.rc-lab { fill:#94a3b8; font-size:11px; }
+.rc-lab.f { font-weight:800; font-size:12px; }
+.rc-cross { stroke:var(--muted); stroke-width:1; }
+.rc-tip { top:8px; transform:translate(-50%,0); text-align:left; line-height:1.55; min-width:170px; white-space:normal; }
+.rc-tip div { color:#cdd6e4; white-space:nowrap; }
+.rc-tip div.f { color:var(--text); font-weight:800; }
+.rc-tip span { color:var(--muted); font-size:.68rem; }
+
+/* ---------- 선수 비교 ---------- */
+.cmp-pick { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.cmp-sel { flex:1; min-width:0; background:var(--card-2); color:var(--text); border:1px solid var(--border); border-radius:10px; padding:8px 10px; font-family:inherit; font-size:.82rem; }
+.cmp-heads { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.cmp-head { display:flex; align-items:center; gap:10px; min-width:0; }
+.cmp-head.r { flex-direction:row-reverse; text-align:right; }
+.cmp-head .pf-img { width:56px; height:56px; }
+.cmp-bars { display:flex; flex-direction:column; gap:8px; }
+.cmp-row { display:grid; grid-template-columns:44px 1fr minmax(82px,auto) 1fr 44px; align-items:center; gap:6px; }
+.cmp-v { font-size:.8rem; font-variant-numeric:tabular-nums; color:var(--muted); text-align:center; }
+.cmp-v.w { color:var(--text); font-weight:800; }
+.cmp-lab { font-size:.72rem; color:#cdd6e4; text-align:center; white-space:nowrap; }
+.cmp-bar { height:10px; background:var(--card-2); border-radius:5px; overflow:hidden; display:flex; }
+.cmp-bar.l { justify-content:flex-end; }
+.cmp-bar i { display:block; height:100%; border-radius:4px; }
+@media (max-width: 420px){ .cmp-row { grid-template-columns:38px 1fr 70px 1fr 38px; gap:4px; } .cmp-lab { font-size:.64rem; white-space:normal; line-height:1.2; } }
+.cmp-head { flex-direction:column; text-align:center; gap:2px; }
+.cmp-head .pf-img { width:64px; height:64px; margin-bottom:4px; }
+.cmp-heads { border-bottom:1px solid var(--border); padding-bottom:10px; }
+.rc-svg { font-family:inherit; }
+/* 휴대폰: 그래프 아래에 표시 (손가락에 가리지 않게) · 마우스: 그래프 위쪽 */
+.rc-tip { top:calc(100% + 6px) !important; bottom:auto; transform:translate(-50%,0); box-shadow:0 8px 24px rgba(0,0,0,.5); }
+@media (hover:hover){ .rc-tip { top:6px !important; } }
