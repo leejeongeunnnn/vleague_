@@ -680,6 +680,16 @@ def save_photo(code, url):
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, "wb") as f:
                 f.write(r.content)
+            try:  # 휴대폰에서 빨리 뜨도록 가로 260px로 줄임
+                from PIL import Image
+                im = Image.open(path)
+                im.load()
+                if im.width > 260:
+                    im = im.convert("RGBA" if im.mode in ("RGBA", "LA", "P") else "RGB")
+                    im = im.resize((260, round(im.height * 260 / im.width)), Image.LANCZOS)
+                    im.save(path, "WEBP", quality=80, method=6)
+            except Exception:  # noqa: BLE001
+                pass
             return rel
     except Exception:  # noqa: BLE001
         pass
