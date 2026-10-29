@@ -1,8 +1,8 @@
 {
- "updated_at_kst": "2026-10-29 16:20",
+ "updated_at_kst": "2026-10-29 19:55",
  "season": "2026-27",
  "status": {
   "schedule": "실패 — 기존 일정 유지: 2026-10-14~2026-11-13: HTTPSConnectionPool(host='api-gw.sports.naver.com', port=443): Read timed out. (read timeout=15)",
-  "news": "실패 — 기존 기사 유지"
+  "news": "성공 40건"
  }
 }
