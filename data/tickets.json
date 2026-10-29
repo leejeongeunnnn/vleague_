@@ -1,55 +1,55 @@
 {
- "updated_at": "2026-10-28 23:01",
+ "updated_at": "2026-10-29 09:02",
  "source": "한국배구연맹(KOVO) 통합 예매",
  "teams": {
   "대한항공": {
-   "url": "https://www.kovo.co.kr/tickets/single?tcode=1001",
-   "price_img": "data/photos/ticket_1001.webp",
-   "homepage": "http://www.kal-jumbos.co.kr/",
    "tcode": "1001",
-   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1001"
+   "url": "https://www.kovo.co.kr/tickets/single?tcode=1001",
+   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1001",
+   "price_img": "data/photos/ticket_1001.webp",
+   "homepage": "http://www.kal-jumbos.co.kr/"
   },
   "현대캐피탈": {
-   "url": "https://www.kovo.co.kr/tickets/single?tcode=1005",
-   "price_img": "data/photos/ticket_1005.webp",
-   "homepage": "https://www.skywalkers.co.kr/",
    "tcode": "1005",
-   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1005"
+   "url": "https://www.kovo.co.kr/tickets/single?tcode=1005",
+   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1005",
+   "price_img": "data/photos/ticket_1005.webp",
+   "homepage": "https://www.skywalkers.co.kr/"
   },
   "우리카드": {
-   "url": "https://www.kovo.co.kr/tickets/single?tcode=1009",
-   "price_img": "data/photos/ticket_1009.webp",
-   "homepage": "http://www.woorivolleyballclub.co.kr",
    "tcode": "1009",
-   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1009"
+   "url": "https://www.kovo.co.kr/tickets/single?tcode=1009",
+   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1009",
+   "price_img": "data/photos/ticket_1009.webp",
+   "homepage": "http://www.woorivolleyballclub.co.kr"
   },
   "KB손해보험": {
-   "url": "https://www.kovo.co.kr/tickets/single?tcode=1004",
-   "price_img": "data/photos/ticket_1004.webp",
-   "homepage": "http://www.kbstarsvc.co.kr",
    "tcode": "1004",
-   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1004"
+   "url": "https://www.kovo.co.kr/tickets/single?tcode=1004",
+   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1004",
+   "price_img": "data/photos/ticket_1004.webp",
+   "homepage": "http://www.kbstarsvc.co.kr"
   },
   "한국전력": {
-   "url": "https://www.kovo.co.kr/tickets/single?tcode=1006",
-   "price_img": "data/photos/ticket_1006.webp",
-   "homepage": "http://home.kepco.co.kr/kepco/SP/A/main/volley.do?menuCd=FN1104",
    "tcode": "1006",
-   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1006"
+   "url": "https://www.kovo.co.kr/tickets/single?tcode=1006",
+   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1006",
+   "price_img": "data/photos/ticket_1006.webp",
+   "homepage": "http://home.kepco.co.kr/kepco/SP/A/main/volley.do?menuCd=FN1104"
   },
   "OK저축은행": {
-   "url": "https://www.kovo.co.kr/tickets/single?tcode=1008",
-   "price_img": "data/photos/ticket_1008.webp",
-   "homepage": "http://www.okfinancialgroupvc.com",
    "tcode": "1008",
-   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1008"
+   "url": "https://www.kovo.co.kr/tickets/single?tcode=1008",
+   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1008",
+   "price_img": "data/photos/ticket_1008.webp",
+   "homepage": "http://www.okfinancialgroupvc.com"
   },
   "삼성화재": {
-   "url": "https://www.kovo.co.kr/tickets/single?tcode=1002",
-   "price_img": "data/photos/ticket_1002.webp",
-   "homepage": "http://www.bluefangs.co.kr",
    "tcode": "1002",
-   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1002"
+   "url": "https://www.kovo.co.kr/tickets/single?tcode=1002",
+   "seat_url": "https://www.kovo.co.kr/tickets/court-views?tcode=1002",
+   "price_img": "data/photos/ticket_1002.webp",
+   "homepage": "http://www.bluefangs.co.kr"
   }
  }
 }
