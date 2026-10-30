@@ -2,7 +2,7 @@
  "items": [
   {
    "title": "63만 관중 흥행, 국제 무대선 노메달… 다시 뜨거워질 V리그, 31일 개막",
-   "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5YZmFoZmF2YWp2d3hhbjVaQ0RweTl5RDZXQTczMjN6empXQmxuR2JzRXZlTl9EV3RCQ1FRU0U3V3FBX0t6SkNqclNxTjN6RDZOcTZIc0c3MDZZOHY0RGFCcGUyQW02UUl2cHpVUk9R0gFzQVVfeXFMT3dvR2pTcjdfMDFLUGZjeGJGVkNLWnVFSk9JZVFVYUF5cVk4WkJjMDRUeEhRS0RHTUczZ0pmQXp1RFFBYkdPUnN5NzZhYU5NWktuTk9SOGkwMzJ3V0RCS2draEhDMkZ4VF9XQVhVUk54QVpsZw?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE93b0dqU3I3XzAxS1BmY3hiRlZDS1p1RUpPSWVRVWFBeXFZOFpCYzA0VHhIUUtER01HM2dKZkF6dURRQWJHT1JzeTc2YWFOTVpLbk5PUjhpMDMyd1dEQktna2hIQzJGeFRfV0FYVVJOeEFabGfSAXNBVV95cUxPd29HalNyN18wMUtQZmN4YkZWQ0tadUVKT0llUVVhQXlxWThaQmMwNFR4SFFLREdNRzNnSmZBenVEUUFiR09Sc3k3NmFhTk1aS25OT1I4aTAzMndXREJLZ2toSEMyRnhUX1dBWFVSTnhBWmxn?oc=5",
    "source": "한국일보",
    "time": "10/30 21:00",
    "ts": 1793361600.0,
@@ -83,6 +83,17 @@
    "time": "10/30 17:49",
    "ts": 1793350143.0,
    "teams": []
+  },
+  {
+   "title": "‘신흥 폭격기’ 케트진스키 앞세운 대한항공, ‘원조 폭격기’ 레오의 현대캐피탈과 새 시즌 개막전 격돌",
+   "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5velk5aVZaaGZTYXRDS0p3NzdOdlRLYjZFSkNJdF8xdHcxTzM0cEExNS1sc3FZbEJ0X3NhbXNpREotQTZFQnUwS1FjT09yVlZHaFZ3cG1rSDdQdnBlZTV5MndkVjFYQmxLMWZjbzRGRVNRSDlj0gFmQVVfeXFMTkNHS25QZzV5RWxEa0Vfak14VWhhTFpGRGdaVXNWMzlLTTRVOVNxMjZ3aVBtR25iQzNKUnNtTGk1QjBsb2tSQy1Mb3NPdnRsZThlNEZ5YUU4UHFuN1NDZVg1X2hZX1Vn?oc=5",
+   "source": "동아일보",
+   "time": "10/30 16:59",
+   "ts": 1793347140.0,
+   "teams": [
+    "대한항공",
+    "현대캐피탈"
+   ]
   },
   {
    "title": "배구의 계절 찾아왔다! 26-27 V리그, 가장 큰 변화는 ‘로컬룰’ 폐지?",
@@ -215,14 +226,6 @@
    ]
   },
   {
-   "title": "'여자 프로배구 최초' 전체 1순위 지명된 재미동포…오드리 박 어떤 토스 보여줄까? 서툰 한국말로 자기소개도",
-   "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9LZnJmOTFFOGc4aWNkNVd1VE9qblYyQlhmMTBaNENZMDVaZ3ZjSXVZUG1lSXprN1VST0k5Mnp4X3RZazNmTkVOQVYxeGUyQjZkOWc?oc=5",
-   "source": "JTBC",
-   "time": "10/30 09:54",
-   "ts": 1793321640.0,
-   "teams": []
-  },
-  {
    "title": "위기의 배구? 흥행 열풍 이어간다…26~27 V-리그, 내일 개막",
    "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5XM0pLVzNsbHlIWEhRcjhGRlFuYkF1TkdsUUh2YVZVblJpSFR4cjM0YkVBWVhXZGFUZlFXNHJwaVh2VEk4VGlFTXVuWWM1S2pCMmwtN2lSN0c3ckJhNDVwNVg4dUY3cVFhZU5XQzNQM3pMZTdGc3FN?oc=5",
    "source": "조선일보",
@@ -297,6 +300,14 @@
    "teams": []
   },
   {
+   "title": "'여자 프로배구 최초' 전체 1순위 지명된 재미동포…오드리 박 어떤 토스 보여줄까? 서툰 한국말로 자기소개도",
+   "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9LZnJmOTFFOGc4aWNkNVd1VE9qblYyQlhmMTBaNENZMDVaZ3ZjSXVZUG1lSXprN1VST0k5Mnp4X3RZazNmTkVOQVYxeGUyQjZkOWc?oc=5",
+   "source": "JTBC",
+   "time": "10/30 06:57",
+   "ts": 1793311032.0,
+   "teams": []
+  },
+  {
    "title": "가족대전·복수혈전⋯ 볼거리 많은 V리그",
    "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFB4NDcyZ25OVXJEODF6MnUySlpRX0ZYS2lWdF9EYmNfZ2RHY2ZqMW55UFlUc3oxR1JVdF9ReFZEOXZlVVFaanhVNERMYW55U1dtSkgxMjJMMEQ?oc=5",
    "source": "국민일보",
@@ -348,16 +359,6 @@
    "ts": 1793254740.0,
    "teams": [
     "KB손해보험"
-   ]
-  },
-  {
-   "title": "순천제일고 이승일·해남 출신 홍준범, 대한항공 유니폼 입는다",
-   "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9QY1F6NVJPVXhBLXN1UmVtbGloaUdHMVJJTENzbVZkN3l2LWlnVHBiXzhOQWZrNnN1dkRNZ093Ul9pMFVEbm1PTmdicFVPUW82RW9lR29uUkYzSnBCaDFydTExNUFHZXN2UmpFTNIBcEFVX3lxTE9lTW1oSW5rNjlwbFYzZ0kwdHl1MFQ4RkNDUzY2MFhIV2NDcGtzcU9mVDllVmZJZ2MxNGxoRHJBa25ObkNETjFHbjU4bU8tV0R3N0RteFZFT1drNF9tOFQwTzZrTGpXNVhGNTFCeTZlVEQ?oc=5",
-   "source": "남도일보",
-   "time": "10/29 14:42",
-   "ts": 1793252528.0,
-   "teams": [
-    "대한항공"
    ]
   }
  ]
