@@ -1,6 +1,35 @@
 {
  "items": [
   {
+   "title": "경기도주식회사, 프로배구에도 다회용기 공급 시작",
+   "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBkN1FySFRBZnE5S01PX2ZObWhTTXJXLVFPeHVTdlhYUm45VUhKckZGUWF3U0hfZFhlY01BbWhxUk1KSndFWkVGUVNxSVJJZGJhYVIxbW5yRy1wa2dNdWZEbnpYMVZnTXBhbkhObzVFY0I?oc=5",
+   "source": "SK브로드밴드 회사소개",
+   "time": "11/02 17:45",
+   "ts": 1793609139.0,
+   "teams": []
+  },
+  {
+   "title": "삼성화재, KB손보 제압하고 분위기 반전…틸리카이넨 감독 첫 승",
+   "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9GQlR2VlJ1T182RXdfMk5nQVFEYkZzVkRDbHNVNXJKdG41a1cxdnNzd2w3ZS1NQTZqSUlLVGU3eUtVT3cwQ2oxY3ViaWk5ZVppcVJqSXhuNWNDc2hOWFF3dWU1cTdxYlRkSGNudQ?oc=5",
+   "source": "파이낸스투데이",
+   "time": "11/02 16:45",
+   "ts": 1793605555.0,
+   "teams": [
+    "KB손해보험",
+    "삼성화재"
+   ]
+  },
+  {
+   "title": "우리카드, 노사 함께 해변 쓰레기 수거…임직원 기금 5000만원 WWF 기부",
+   "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1IOHkxQl8xNGdmZ3NYbVNWVzl4ek44aXZmVDFSY0piMHUxTXI2TE5yNzZ1LURXMkNNelNfYnR6WTFXRnpNeXBEY3NTYzJCY3NTOEt3VVBLb3ItLXd3bWhzSmpKX2ZOaWcxSGxn?oc=5",
+   "source": "미래경제",
+   "time": "11/02 16:20",
+   "ts": 1793604006.0,
+   "teams": [
+    "우리카드"
+   ]
+  },
+  {
    "title": "중부대 배구부의 힘…2026-2027 KOVO 신인드래프트서 3명 지명",
    "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE94bGo1NWNpNC05dmtIX0p3RE9FTWlLUjB0Y1B3QlZ6cDBzNmY0dHV4eXQ5anNvSVNqeDNHS1owMW1BanJLcmFWR0plUFk4eUQyWF9VS0NIWkJRTmNEeU9Ua1NKRzlQRzhEcjJ2ZHRR?oc=5",
    "source": "충청투데이",
@@ -28,7 +57,7 @@
   },
   {
    "title": "\"평택 홈팬 응원 정말 대단했다\" 라미레스 KB손해보험 감독 엄지척 [MD평택]",
-   "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5HUGRNb0I4bl9TYl9oQnRXTTZMQW9tOVNtVnYwWEtlbEx6dWFyRnlwaDFiTnJjM09xY2NTcXVQNUcwRXcxNFpuSEFfdTVhS2VRTy1pbDE0cTJSYXdfTWY5bHFmaFlJZw?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9XTnFLcFo0aWtBbktSNTF0dnEzVEozcjJQVThSR3pxTE1WWk9zNGxYQ3cxSTh0bEdxdExfWHBzaXNGOTdnNFl0QXpJTzd0N21Qd1ZMVlpQSHhfcGNISHhSXw?oc=5",
    "source": "마이데일리",
    "time": "11/02 15:54",
    "ts": 1793602440.0,
@@ -38,7 +67,7 @@
   },
   {
    "title": "[IS 피플] 남자부도 아시아쿼터 선수 신드롬? 메가 소환한 삼성화재 왕빈",
-   "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE50dHo2WTR4RmJlY25YM3J0UC1PcURvNE03YzlKSDdFemlWbHI1SUx3MTFLU2hRS0pyNndjYVAxT0ZVVl9KcW44OVY5c3lld0NkV3lxbm9zeElld0V2Vlk2WmVn?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1UbU8xYlZiNG1pYTlzWEpQQ0xzS2FWY0JKSVVYbml2S2xBUi1BemhOVnd2bDB6Q2lYbmRfUkZ2R19jeHQwTXJqOG91YjlYRFE5SG5aamFHTk5mX1U?oc=5",
    "source": "일간스포츠",
    "time": "11/02 14:58",
    "ts": 1793599080.0,
@@ -47,14 +76,12 @@
    ]
   },
   {
-   "title": "SOOP, 우리카드 배구단 공식 응원중계 7시즌 연속 진행",
-   "link": "https://news.google.com/rss/articles/CBMi-AFBVV95cUxQeU5EMTNzei1kbEUxM0FoNEFZcU5CYWpjR2NvZUlFbDUycFFqLXY1b2QwcS1VMXFISHpYc1NMeDJpRmxuTEE3SXhRWHowQ2JySFRMbHNGY2tvZWlTLTc1WWdZVTEyV1N2MjFOSFdnMUhHNzQxbHVDNG5oazItZS0zQlk2VTJxM2dLcGZjSmNfekxRX3JqdVZxUm1xemxwb3V6eko0VDBmVXBuVmVmNVB2OTduNnJuVG16THNiYUZLUkZaTTRNdHFmdGVycm1Qb3dydW9IQ0ZTS0d4eTU5c1czSFRTRFl1NlVpS3g0NkNKR2lCTG1LTG9TZQ?oc=5",
-   "source": "데일리안",
-   "time": "11/02 14:36",
-   "ts": 1793597760.0,
-   "teams": [
-    "우리카드"
-   ]
+   "title": "'새 얼굴이 뜬다' 케트진스키·왕빈·킨델란, V리그 데뷔전부터 맹활약",
+   "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBwMndJcDhYU29TNzlyOUdFeVU3dUttU28yVGRjczctSEpIdG05M1pmTkFicFgxUmxKQVZCbkY5aDBqSzFSclBRR2pZNkNWWlJFcXVCaEtiNFJLZw?oc=5",
+   "source": "파이낸셜뉴스",
+   "time": "11/02 14:39",
+   "ts": 1793597975.0,
+   "teams": []
   },
   {
    "title": "SOOP, 우리카드 배구단 공식 응원중계 7시즌 연속 운영",
@@ -115,6 +142,16 @@
    ]
   },
   {
+   "title": "우리카드, 노사 공동 해안정화 봉사…세계자연기금에 5000만원 기부",
+   "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFAwVFAxWGNLX0k3SFQxOTJweVFMdUplN3lZWXFnSFpMWGJtbGh6cVliS2lXcjlldVF6cTROX2tTMm82bkRnZG8waHZuNG5oQy1yOG9lckR3dWV5Q2dB?oc=5",
+   "source": "뉴스핌",
+   "time": "11/02 11:12",
+   "ts": 1793585520.0,
+   "teams": [
+    "우리카드"
+   ]
+  },
+  {
    "title": "SOOP, 우리카드 배구단 경기 중계…7개 시즌 연속",
    "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9pZzc1RUJuLWlIZXZmQTlDQ29Tc3hZd2FaQWlyN2lXdVgzM1JZbnBsZGtZRkdGSDVCem95MWVuSEVpRkRxa1RDQjRzeXpVamRRQkVJb25nbjQxUXR0SWpCQjZscFZWalRRNE5YemRxWFPSAXRBVV95cUxNSkpXVlA3RHZLWkNHVVh0cXpmOFFYWXU4NWRiMnZsNzI2eGVVODZMUWRKX0NEdUsySFBLRDdrUDkwbXh6ZHptZGc4WExOajBwZWFKcnU0MXd0cWdiaDNhcm5JRkM2VGhnWEJIMEZkWTdKaGt4bA?oc=5",
    "source": "주간한국",
@@ -143,6 +180,14 @@
    "teams": [
     "우리카드"
    ]
+  },
+  {
+   "title": "경기도주식회사, 축구·농구 이어 프로배구도 '다회용기' 공급 시작 - 보도자료 | 기사",
+   "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE1HRmhPX2lqVjRCeUtpalZzakNTTG5jaU5nYVZoSlEtTkxxRTNRbllpNnNONjdFZVQxOHNPVnJYbEp6ellxdmxHMVV5QnpZdGs2N1JZUkJBMGE1U3d5bFNN?oc=5",
+   "source": "더팩트",
+   "time": "11/02 10:29",
+   "ts": 1793582967.0,
+   "teams": []
   },
   {
    "title": "[경기도주식회사] 프로배구 경기장에도 다회용기 공급… 농구·배구 9개 구단 확대",
@@ -203,7 +248,7 @@
   },
   {
    "title": "SOOP, 2026-2027 V-리그 우리카드 공식 응원 중계 진행",
-   "link": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE5ISmdmVHhDajBVdTE0U09BN3FKRHZ4TnJYemd2YWVwcW1SOTBYMXRyU0RGTEdiaTlidkVRN2xYNUxrUlBnRjluMQ?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTFAxYnVpak9ncEVDSGhwWUNsbTNCYTRlT2dUdm4xZFBlWmtBU084dFlqUFpUeGh6Qnlia3A1a2JtNmhSMHJFcHlkREhTMA?oc=5",
    "source": "아이뉴스24",
    "time": "11/02 09:44",
    "ts": 1793580294.0,
@@ -238,6 +283,16 @@
    "time": "11/02 09:30",
    "ts": 1793579400.0,
    "teams": []
+  },
+  {
+   "title": "SOOP, 우리카드 배구단 공식 응원중계 7시즌 연속 진행",
+   "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9ZQ2hJSnV1ekRNei1KMkNsbzNycGNiOGZPV3NIb1B2dWhRV21XeGU0Qjc1LTc0YWtIVTBjTkk5MjczRXB4eUhTUFVwUWtXOUV1WENCX3FkUm4xN1lsSnBsVlJRQVY4a3VENHpYWkNR?oc=5",
+   "source": "뉴스후플러스",
+   "time": "11/02 09:23",
+   "ts": 1793578995.0,
+   "teams": [
+    "우리카드"
+   ]
   },
   {
    "title": "SOOP, 7시즌 연속 우리카드 배구단 공식 응원중계…V리그 활성화",
@@ -284,6 +339,16 @@
    "teams": []
   },
   {
+   "title": "인천시, 대한항공 점보스 배구단과 '2028 G20 정상회의' 시민 캠페인",
+   "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1NLWxGVmlkdHlRSDctNHFSLWNSVmxodHRjVTNaTlA2azFONEhCdjB5NXNYa2dJOEx0ak9OWTkxTk1EWnlGRW9MZnVRQ1JpeUk0MVByXzFRdUlGZjNtSkJEVUZsZHRiaXBzWEMyTFNSWVo?oc=5",
+   "source": "인천투데이",
+   "time": "11/02 08:46",
+   "ts": 1793576813.0,
+   "teams": [
+    "대한항공"
+   ]
+  },
+  {
    "title": "경기도- 경기도주식회사, 프로배구 코트에도 '다회용기'…축구·농구 이어 배구 4개 구단 확대",
    "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFA3aFF6ay1sbC0wb2d6Z09FRnZzRzBnY3ZkYVYycjZUczNVY0d6ckI2SkpRazBfTHRwbzRVOTlicTdLb210ZUNRSTZaOGhJcW85RmlQdFhpN1BDdzlDTm1ZQ2FkcjFhbUdmRjFF?oc=5",
    "source": "경기타임스 e",
@@ -292,94 +357,22 @@
    "teams": []
   },
   {
+   "title": "'토미호' 삼성화재, 왕빈 35점 앞세워 승리…흥국은 SOOP 제압(종합)",
+   "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1LZ0UwZ3hYdWUxbFkwU3VMcnhDQUlzT2dlTDhLV3hzTWxfVW54Y2xkSXdqanFPLXNzYVJnLWowUm1Zc0tsRVlwVGtjc0R2cl94ZHhaVkR3cEs1UQ?oc=5",
+   "source": "뉴스1",
+   "time": "11/02 08:02",
+   "ts": 1793574162.0,
+   "teams": [
+    "삼성화재"
+   ]
+  },
+  {
    "title": "경기도, 프로스포츠 경기장 다회용기 공급 확대…프로배구까지 지원",
    "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1QNWV3bGxmdGxoY1RnaVdjVnJMZlotSE5GQUJwQmk5TjJuTnZ6aUdjTl8tdzB6aGtIZUVLV0gzNF9lQ05RbkR1Xy1yM3JEdm1WNFcyQlp2RmFpMWRTS1JNQ25hNGtHV1F0d0xWWEJadw?oc=5",
    "source": "이코노뉴스",
    "time": "11/02 07:50",
    "ts": 1793573400.0,
    "teams": []
-  },
-  {
-   "title": "인천시, 대한항공 점보스 배구팀과 ‘2028 G20 정상회의’ 인천 유치 공동 응원",
-   "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBSX2RKUEMxT1NsX2JOamVjYnRWZmwweDViUlRnR1JnNjcxd01ROUtFMnNGTkVyYmFpek1UblhLRW5WNVM5UTJpUWtCOHpXUkItZUZDSEVoZklfeGM4dnZ4NjhhMUVINjlpNkE?oc=5",
-   "source": "비즈월드",
-   "time": "11/02 05:02",
-   "ts": 1793563320.0,
-   "teams": [
-    "대한항공"
-   ]
-  },
-  {
-   "title": "[게임노트] '왕빈 가세한' 삼성화재, '평택에 둥지 튼' KB손해보험 3-1로 누르며 미소",
-   "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9NY0lGd2dvUFZteHQ1dG9jUk55bHhMa2hSeWgwR1E1akhTbm4xaEpfYVk3TVV5Q0Q5aS1ZN3Q3VXd6Q05qdThLWHY2c1pTQ0xuMkpfZW9qc1pDYnd5dmxIRldGVWFKSGg0UFVSNDlPZ3lfdw?oc=5",
-   "source": "스포츠타임스",
-   "time": "11/02 03:42",
-   "ts": 1793558535.0,
-   "teams": [
-    "KB손해보험",
-    "삼성화재"
-   ]
-  },
-  {
-   "title": "'돌아온 틸리카이넨' 삼성화재, KB손보 꺾고 개막전 승리… 흥국생명, 신생팀 SOOP 3-0 완파",
-   "link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5NRzRHR2pmamdCQ0x3bUN2U2FnX3c5WmhFZDRJMlVDSHMtbmswVWFucjBkdGFQcFBDM2xTcWVNVkp4bmpST1FYdjRNMUNWUVdXTmlBc1ppaWtWUkNMNzBobTFubG4xX2w5MGVpbUtmLUd6alJGczhSbUQtX3VkTkHSAX9BVV95cUxOTUc0R0dqZmpnQkNMd21DdlNhZ193OVpoRWQ0STJVQ0hzLW5rMFVhbnIwZHRhUHBQQzNsU3FlTVZKeG5qUk9RWHY0TTFDVlFXV05pQXNaaWlrVlJDTDcwaG0xbmxuMV9sOTBlaW1LZi1HempSRnM4Um1ELV91ZE5B?oc=5",
-   "source": "데일리스포츠한국",
-   "time": "11/02 01:12",
-   "ts": 1793549576.0,
-   "teams": [
-    "KB손해보험",
-    "삼성화재"
-   ]
-  },
-  {
-   "title": "프로배구 2026-2027 V리그 개막…6개월 열전 돌입 : 스포츠",
-   "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE5FYUtDdF9oMVhQVmxEYjNpMTZlMmpnS1c1dEtUSmp3NXVrM0NUOFd2ajFCSUtJb1JhTjBEaGFQMktUNU1UQlRDYWlXOA?oc=5",
-   "source": "재경일보",
-   "time": "11/02 00:37",
-   "ts": 1793547420.0,
-   "teams": []
-  },
-  {
-   "title": "인천시, 스포츠마케팅으로 2028 G20 정상회의 유치전…대한항공 점보스와 공동 홍보",
-   "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBVX0hsY3JQOWZTWTBCc2N5cmtncmtYakRxTFYxNEQ3MVBCOVlpV2UzcDlrSzljQllNb1doVTk0V2RFNDdib01Zd3lQazhyaDZFeTlkYzYxVVJPNzRiUnhDd2I5ZEJjb3JwMWNPQWxPOA?oc=5",
-   "source": "STN SPORTS",
-   "time": "11/01 22:08",
-   "ts": 1793538507.0,
-   "teams": [
-    "대한항공"
-   ]
-  },
-  {
-   "title": "인천시, 대한항공 점보스 배구팀과 2028 G20 정상회의 인천 유치 공동 응원 > 뉴스",
-   "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE8xdGg5ekVxUTFDTlhmUzV1N2x5SGZKLVNSQWs4SUxXX2wxc1ZEeWlJcnAtQjNzRGFaRmRGT2luZktIUVYyZnBVdmxOazdOVmt6YWxINm9qNlIwTFZFaFN1aWplNzA1eDNsQmlBalpQbmhRdw?oc=5",
-   "source": "더코리아",
-   "time": "11/01 21:40",
-   "ts": 1793536800.0,
-   "teams": [
-    "대한항공"
-   ]
-  },
-  {
-   "title": "'대이변' 남자배구 삼성화재, 드디어 명가재건? KB손해보험 꺾고 첫 승...여자부는 흥국생명 완승(종합)",
-   "link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxObzhyWWhxX2owcFZ0OHNQNmVuaW5zVVNRQ1ZjLWc5VHI3d3lPNmFkeDVFYXhDWWl1eV9Gak9KaWF5Y3pqWmVfaTZUZUMwYm11WHE0cUdKX2tBNHltNEsyMkt2MHlJRTBLUjlLelJtZ09ZTEFsZHNuTFBIWGlpQXJIM1lR?oc=5",
-   "source": "스포탈코리아",
-   "time": "11/01 21:34",
-   "ts": 1793536468.0,
-   "teams": [
-    "KB손해보험",
-    "삼성화재"
-   ]
-  },
-  {
-   "title": "[배구] 삼성화재, KB손보 3-1 제압… 틸리카이넨 감독 복귀전 첫 승",
-   "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9JUjA3Q292UGQ5U1Y0Mnp0b1RneGxqeFo1blAxQVlNbmExYV9ZR2dQMVl4UGFHTHNNRVVaeXdDcmFhQVV0VjNJSmM1ZmVCaWhtV1JBamdkd0NuZXFLWUxXRFlLdU9TdkZFUmc?oc=5",
-   "source": "천지일보",
-   "time": "11/01 20:31",
-   "ts": 1793532694.0,
-   "teams": [
-    "KB손해보험",
-    "삼성화재"
-   ]
   }
  ]
 }
