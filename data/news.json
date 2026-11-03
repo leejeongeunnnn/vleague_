@@ -46,7 +46,7 @@
   },
   {
    "title": "삼성화재, KB손보 제압하고 분위기 반전…틸리카이넨 감독 첫 승",
-   "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5iam5SSVZ5RnQ1U2c0ZGo4RGhqWXlYUW5kcTY0MlNsM1NmOGVvdDVzMmpyZ1FVaFY5b19XMlBRb0xCNVpDRHAwNmZTV1pOUURta2hzOGVsQi1HVUV6NnVUMmxYNVBoUW8?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9GQlR2VlJ1T182RXdfMk5nQVFEYkZzVkRDbHNVNXJKdG41a1cxdnNzd2w3ZS1NQTZqSUlLVGU3eUtVT3cwQ2oxY3ViaWk5ZVppcVJqSXhuNWNDc2hOWFF3dWU1cTdxYlRkSGNudQ?oc=5",
    "source": "파이낸스투데이",
    "time": "11/02 16:45",
    "ts": 1793605555.0,
@@ -83,7 +83,7 @@
   },
   {
    "title": "케트진스키·왕빈·킨델라 등 프로배구 '새 얼굴' 데뷔전 눈도장",
-   "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE5fd1EwWkppaUNQWWRnLXBwQ0x6VElvV2lSZE5yamdUbVdMNThUMzdwVEZ4c3VSSmd1Z05sZG8wbXhJUUg3SFBTa0tMRmRNU1VlYU1uNFFpYklNdHhvcV9RbFhacmthTl83R00wMWhoN294UE1NNmZqeNIBeEFVX3lxTE5fd1EwWkppaUNQWWRnLXBwQ0x6VElvV2lSZE5yamdUbVdMNThUMzdwVEZ4c3VSSmd1Z05sZG8wbXhJUUg3SFBTa0tMRmRNU1VlYU1uNFFpYklNdHhvcV9RbFhacmthTl83R00wMWhoN294UE1NNmZqeA?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBEbVJ0SWdiM3VpQ0lhRHRaMTc3MUcydnhQQXMtcmc0dXRXMk5fcm5UQlB2MW9vTDI0aF8yOGc1Y01wSHIwUWlIZjFqSnUtMjlteUJhMXZvSjI0M3lfV0VNatIBeEFVX3lxTE5fd1EwWkppaUNQWWRnLXBwQ0x6VElvV2lSZE5yamdUbVdMNThUMzdwVEZ4c3VSSmd1Z05sZG8wbXhJUUg3SFBTa0tMRmRNU1VlYU1uNFFpYklNdHhvcV9RbFhacmthTl83R00wMWhoN294UE1NNmZqeA?oc=5",
    "source": "뉴시스",
    "time": "11/02 16:09",
    "ts": 1793603390.0,
@@ -118,14 +118,6 @@
    "teams": [
     "삼성화재"
    ]
-  },
-  {
-   "title": "'새 얼굴이 뜬다' 케트진스키·왕빈·킨델란, V리그 데뷔전부터 맹활약",
-   "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBwMndJcDhYU29TNzlyOUdFeVU3dUttU28yVGRjczctSEpIdG05M1pmTkFicFgxUmxKQVZCbkY5aDBqSzFSclBRR2pZNkNWWlJFcXVCaEtiNFJLZw?oc=5",
-   "source": "파이낸셜뉴스",
-   "time": "11/02 14:39",
-   "ts": 1793597975.0,
-   "teams": []
   },
   {
    "title": "SOOP, 우리카드 배구단 공식 응원중계 7시즌 연속 진행",
@@ -361,6 +353,16 @@
    "time": "11/02 08:52",
    "ts": 1793577120.0,
    "teams": []
+  },
+  {
+   "title": "인천시, 대한항공 점보스 배구단과 '2028 G20 정상회의' 시민 캠페인",
+   "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1NLWxGVmlkdHlRSDctNHFSLWNSVmxodHRjVTNaTlA2azFONEhCdjB5NXNYa2dJOEx0ak9OWTkxTk1EWnlGRW9MZnVRQ1JpeUk0MVByXzFRdUlGZjNtSkJEVUZsZHRiaXBzWEMyTFNSWVo?oc=5",
+   "source": "인천투데이",
+   "time": "11/02 08:46",
+   "ts": 1793576813.0,
+   "teams": [
+    "대한항공"
+   ]
   },
   {
    "title": "경기도- 경기도주식회사, 프로배구 코트에도 '다회용기'…축구·농구 이어 배구 4개 구단 확대",
