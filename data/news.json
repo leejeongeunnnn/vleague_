@@ -63,7 +63,7 @@
   },
   {
    "title": "'허수봉 26점 폭발' 현대캐피탈, 삼성화재 꺾고 시즌 첫 승… 도로공사도 첫 승",
-   "link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE1Uc1BabHRkYUc4cXpyZ1lvdjBONzNKbnJNR1ZZQXdIX0wxRDhnMk9UNktsRW0ycGJtQjJjY2JPTXFjOWVwQmtfZ1JvR2YzU2xzekJwV28wRlRYQWthM0g2cm9aOVdqb1BGQ2dIRk9nVTBXRG9NaFFVRnR1S0x1RkXSAX9BVV95cUxNVHNQWmx0ZGFHOHF6cmdZb3YwTjczSm5yTUdWWUF3SF9MMUQ4ZzJPVDZLbEVtMnBibUIyY2NiT01xYzllcEJrX2dSb0dmM1Nsc3pCcFdvMEZUWEFrYTNINnJvWjlXam9QRkNnSEZPZ1UwV0RvTWhRVUZ0dUtMdUZF?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE10Tl9fN3ZQc2NTQ29SLVJKR2hNdjk4MGRJMWVWR1JDOXZXb0U1TGhpVjJVV1M3bFJFRWtmbUlyUnA0ZUNmNExIZmd1T2FFc21Ya1kxMllReERQWGdoQkctRU81RFlxdEo4WE9tWDlQandIcWhiQS1XZXduMNIBf0FVX3lxTE1Uc1BabHRkYUc4cXpyZ1lvdjBONzNKbnJNR1ZZQXdIX0wxRDhnMk9UNktsRW0ycGJtQjJjY2JPTXFjOWVwQmtfZ1JvR2YzU2xzekJwV28wRlRYQWthM0g2cm9aOVdqb1BGQ2dIRk9nVTBXRG9NaFFVRnR1S0x1RkU?oc=5",
    "source": "데일리스포츠한국",
    "time": "11/05 22:08",
    "ts": 1793884089.0,
@@ -142,17 +142,6 @@
    "source": "마이데일리",
    "time": "11/05 21:23",
    "ts": 1793881435.0,
-   "teams": [
-    "현대캐피탈",
-    "삼성화재"
-   ]
-  },
-  {
-   "title": "시즌 첫 V-클래식 매치 승자는 현대캐피탈…미들블로커 싸움서 최민호-김진영이 우위 점하며 삼성화재에 3-1 승리",
-   "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE5PaW5uQlpHWFU5X3M5LTB0RjBFbzE2VlVza0JONHdjTWh4VlNZRnQ2MWFWa2dqLUtWNk9NUGFKbzV0Z0sxMlpGeHVFdWt3WEkwSEVfdHRLSGVEUnNfLU9wZTF3QVZOR2ZicEgyOFYxTkVVQQ?oc=5",
-   "source": "스포츠동아",
-   "time": "11/05 21:23",
-   "ts": 1793881391.0,
    "teams": [
     "현대캐피탈",
     "삼성화재"
@@ -412,6 +401,17 @@
    "ts": 1793797140.0,
    "teams": [
     "KB손해보험"
+   ]
+  },
+  {
+   "title": "[AI상보] '페이즈 블로킹 9개 신기록' OK저축은행, KB손보 3-1 제압 시즌 첫 승",
+   "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBCT1BER204a1UzLXFvajhlZmxMUmtTbVQ5LWpWWVpjYjI2SjRBTmRXbHpMR0NxeC1MSkJJUkp3MGRpVkJpUThyQVc5UnNib2djU0dnNkhIRy1IX3pI?oc=5",
+   "source": "뉴스핌",
+   "time": "11/04 21:49",
+   "ts": 1793796540.0,
+   "teams": [
+    "KB손해보험",
+    "OK저축은행"
    ]
   }
  ]
