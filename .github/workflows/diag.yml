@@ -10,16 +10,18 @@ jobs:
       - shell: bash {0}
         run: |
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
-          Q="schedule/games?fields=basic&upperCategoryId=volleyball&categoryId=kovo&fromDate=2026-11-11&toDate=2026-11-11"
-          echo "== dns"; getent ahosts api-gw.sports.naver.com | head; curl -s -m 8 https://ipinfo.io/json || true
-          t(){ echo "== $1"; shift; curl -sS -m 20 -o /tmp/o -w "code=%{http_code} t=%{time_total} ip=%{remote_ip}\n" "$@"; head -c 300 /tmp/o; echo; }
-          t naver4 -4 -A "$UA" -H "Referer: https://m.sports.naver.com/" "https://api-gw.sports.naver.com/$Q"
-          t naver6 -6 -A "$UA" "https://api-gw.sports.naver.com/$Q"
-          t naver_noua "https://api-gw.sports.naver.com/$Q"
-          t naver_http1 --http1.1 -A "$UA" "https://api-gw.sports.naver.com/$Q"
-          t msports -A "$UA" "https://m.sports.naver.com/volleyball/schedule/index?category=kovo"
-          t naver_main -A "$UA" "https://www.naver.com/"
-          t kovo_teams -A "$UA" -H "Origin: https://www.kovo.co.kr" -H "Referer: https://www.kovo.co.kr/" "https://api.kovo.co.kr/teams"
-          t kovo_site -A "$UA" "https://www.kovo.co.kr/"
-          t daum -A "$UA" "https://sports.daum.net/schedule/volleyball"
-          t daum_api -A "$UA" -H "Referer: https://sports.daum.net/" "https://sports.daum.net/prx/hermes/api/game/schedule.json?page=1&leagueCode=kovo_m&seasonKey=20262027&fromDate=20261111&toDate=20261111"
+          mkdir -p o && cd o
+          curl -sSL -A "$UA" https://www.kovo.co.kr/ -o index.html
+          grep -oE '(src|href)="[^"]+\.js[^"]*"' index.html | head -40
+          for u in $(grep -oE '(src|href)="[^"]+\.js[^"]*"' index.html | sed -E 's/.*="([^"]+)"/\1/'); do
+            case $u in http*) ;; *) u="https://www.kovo.co.kr$u";; esac
+            curl -sSL -A "$UA" "$u" >> all.js; echo >> all.js
+          done
+          # next.js build manifest chunks
+          for u in $(grep -oE '/_next/static/[^"]+\.js' all.js index.html | sed 's/^[^:]*://' | sort -u | head -300); do curl -sSL -A "$UA" "https://www.kovo.co.kr$u" >> all.js; echo >> all.js; done
+          for u in $(grep -oE 'static/chunks/[A-Za-z0-9_./-]+\.js' all.js | sort -u | head -400); do curl -sSL -A "$UA" "https://www.kovo.co.kr/_next/$u" >> all.js; echo >> all.js; done
+          wc -c all.js
+          echo "=== api paths"
+          grep -oE '"/(game|games|match|matches|schedule|schedules|live|relay|record|records|season|seasons|rank|ranks|ranking|standing|standings)[A-Za-z0-9_/${}.?=&-]*' all.js | sort | uniq -c | sort -rn | head -150
+          echo "=== template paths"
+          grep -oE '`/[a-z][A-Za-z0-9_/${}.?=&-]{3,80}`' all.js | sort -u | head -200
