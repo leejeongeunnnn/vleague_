@@ -7,12 +7,14 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - shell: bash {0}
         run: |
-          pip install -q requests
-          python diag/probe.py
-          cd out && git init -q -b diag-out && git add . && git -c user.name=b -c user.email=b@x commit -qm out
+          pip install -q -r requirements.txt
+          time python collect.py --skip-news 2>&1 | tail -15
+          time python collect.py --live 2>&1 | tail -10
+          mkdir -p /tmp/pub && cp -r data/live.json data/schedule.json data/meta.json data/players.json /tmp/pub/ && mkdir /tmp/pub/games && cp data/games/2026111* /tmp/pub/games/ ; ls data/games | wc -l
+          cd /tmp/pub && git init -q -b diag-out && git add . && git -c user.name=b -c user.email=b@x commit -qm out
           git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" diag-out:diag-out
