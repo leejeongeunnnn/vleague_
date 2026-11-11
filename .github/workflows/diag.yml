@@ -21,7 +21,7 @@ jobs:
           for u in $(grep -oE '/_next/static/[^"]+\.js' all.js index.html | sed 's/^[^:]*://' | sort -u | head -300); do curl -sSL -A "$UA" "https://www.kovo.co.kr$u" >> all.js; echo >> all.js; done
           for u in $(grep -oE 'static/chunks/[A-Za-z0-9_./-]+\.js' all.js | sort -u | head -400); do curl -sSL -A "$UA" "https://www.kovo.co.kr/_next/$u" >> all.js; echo >> all.js; done
           wc -c all.js
-          echo "=== api paths"
-          grep -oE '"/(game|games|match|matches|schedule|schedules|live|relay|record|records|season|seasons|rank|ranks|ranking|standing|standings)[A-Za-z0-9_/${}.?=&-]*' all.js | sort | uniq -c | sort -rn | head -150
-          echo "=== template paths"
-          grep -oE '`/[a-z][A-Za-z0-9_/${}.?=&-]{3,80}`' all.js | sort -u | head -200
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kovojs
+          path: o/
