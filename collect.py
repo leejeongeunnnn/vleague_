@@ -288,6 +288,11 @@ def naver_detail_sets(gid):
 def collect_schedule():
     old = load("schedule.json", {}) or {}
     old_by_id = {g["gid"]: g for g in old.get("games", []) if not old.get("_seed")}
+    # 1순위: KOVO 공식 API. (네이버 api-gw 는 2026-10 말부터 GitHub Actions 서버의 접속을 막는다)
+    try:
+        return collect_schedule_kovo(old)
+    except Exception as e:  # noqa: BLE001
+        print("[WARN] KOVO 일정 실패, 네이버로 재시도:", e)
     games, months, errors = [], [], []
     start = CUP_START - timedelta(days=5)
     cur = start
@@ -483,7 +488,7 @@ def save_finished_relays(games, budget=8):
             continue
         budget -= 1
         try:
-            r = fetch_game_relay(g["gid"], final=True)
+            r = fetch_game_relay_kovo(g, final=True) if g.get("k") else fetch_game_relay(g["gid"], final=True)
         except Exception as e:  # noqa: BLE001
             print("[WARN] relay", g["gid"], e)
             continue
@@ -496,7 +501,8 @@ def save_finished_relays(games, budget=8):
 
 # ---------------------------------------------------------------- 선수 기록 (문자중계 집계)
 ATTACKS = ("퀵오픈", "백어택", "속공", "오픈", "시간차", "이동공격", "후위공격")
-ERR_WORDS = ("아웃", "네트걸림", "라인오버", "오버넷", "포히트", "터치넷", "캐치볼", "더블콘텍트", "기타범실")
+ERR_WORDS = ("아웃", "네트걸림", "라인오버", "오버넷", "포히트", "터치넷", "캐치볼", "더블콘텍트", "기타범실",
+             "드리블", "로테이션", "로테이션범실", "아웃오브포지션", "스크린")
 POS_KR = {"S": "세터", "OH": "아웃사이드 히터", "OP": "아포짓", "MB": "미들블로커", "L": "리베로"}
 
 
@@ -652,7 +658,7 @@ def build_player_stats(games):
                         "rcv_eff": pct(r["rcv_ok"] - r["rcv_fail"], r["rcv"]), "pts_ps": per(r["pts"], r["s"])})
     STATUS["players"] = f"{scope} {len(use)}경기 · {len(rows)}명"
     return save("players.json", {"season": SEASON, "scope": scope, "games": len(use),
-                                 "source": f"네이버 문자중계 집계 · {scope} {len(use)}경기",
+                                 "source": f"문자중계 집계 · {scope} {len(use)}경기",
                                  "categories": cats, "roster": dict(roster), "all": allrows})
 
 
@@ -661,10 +667,10 @@ KOVO_API = "https://api.kovo.co.kr"
 KOVO_H = {**HEADERS, "Origin": "https://www.kovo.co.kr", "Referer": "https://www.kovo.co.kr/"}
 
 
-def kovo(path):
-    for i in range(3):
+def kovo(path, params=None, tries=3):
+    for i in range(tries):
         try:
-            r = requests.get(KOVO_API + path, headers=KOVO_H, timeout=20)
+            r = requests.get(KOVO_API + path, params=params, headers=KOVO_H, timeout=20)
             if r.status_code == 200:
                 js = r.json()
                 if (js.get("result") or {}).get("status") == 200:
@@ -795,6 +801,268 @@ def collect_profiles(force=False, max_age_h=20):
     return save("profiles.json", {"updated_at": now_kst().strftime("%Y-%m-%d %H:%M"), "source": "한국배구연맹(KOVO)", "teams": out})
 
 
+# ---------------------------------------------------------------- KOVO 공식 API (일정·실시간·문자중계)
+# 네이버 api-gw.sports.naver.com 이 GitHub Actions(해외 클라우드) 서버의 접속을 응답 없이 끊어서
+# 2026-10-26 이후 일정·실시간 점수가 멈췄다. KOVO 공식 API 는 그대로 열려 있으니 이쪽을 1순위로 쓴다.
+# 경기 ID 는 네이버와 같은 규칙(날짜 + 시즌코드 + 'M' + 경기번호)으로 만들어 기존 데이터와 이어진다.
+KOVO_GCODE = "001"   # 일반 V-리그
+KOVO_MEN = "1"       # gender: 1 = 남자부
+
+
+def kovo_season_code():
+    p = kovo("/main/game/season") or {}
+    return str(p.get("seasonCode") or os.environ.get("VL_KOVO_SEASON", "023"))
+
+
+def kovo_game_list(season):
+    p = kovo("/stat/game-schedule", {"gcode": KOVO_GCODE, "seasonCode": season, "gender": KOVO_MEN,
+                                     "page": 0, "size": 500})
+    if p is None:
+        raise RuntimeError("KOVO /stat/game-schedule 응답 없음")
+    return p.get("content") if isinstance(p, dict) else p
+
+
+def kovo_gid(x):
+    return f"{x['gdate'].replace('-', '')}{x['seasonCode']}M{x['gnum']}"
+
+
+def parse_kovo(x):
+    """KOVO 일정 한 줄 → 사이트 경기 형식 (parse_naver 와 같은 모양)"""
+    try:
+        d = date.fromisoformat(x["gdate"])
+    except Exception:  # noqa: BLE001
+        return None
+    home, away = team_kr(x.get("hsname") or x.get("hname")), team_kr(x.get("asname") or x.get("aname"))
+    league = str(x.get("leagueCode") or "")
+    lname = (x.get("leagueName") or "").strip()
+    kind, series = classify(d, home, away, lname, "" if league in ("201", "901") else "post")
+    if kind == "ps" and lname and lname != "정규리그":
+        series = lname
+    sh, sa = to_int(x.get("hspoint")) or 0, to_int(x.get("aspoint")) or 0
+    sets = [[to_int(x.get(f"hs{i}point")) or 0, to_int(x.get(f"as{i}point")) or 0] for i in range(1, 6)]
+    sets = [s for s in sets if s[0] or s[1]]
+    final = (x.get("result") or "").strip() in ("W", "L") or max(sh, sa) >= 3
+    state = "final" if final else ("live" if sets or sh or sa else "scheduled")
+    tm = (x.get("gstime") or "").strip()[:5]
+    out = {
+        "gid": kovo_gid(x), "date": x["gdate"], "time": "" if tm in ("", "00:00") else tm,
+        "kind": kind, "series": series, "home": home, "away": away,
+        "venue": (x.get("place") or "").strip() or VENUES.get(home, ""),
+        "state": state, "status": "경기 종료" if final else ("경기 중" if state == "live" else ""),
+        "k": {"s": str(x["seasonCode"]), "r": to_int(x.get("round")) or 0, "n": to_int(x["gnum"]),
+              "h": str(x.get("hcode") or ""), "a": str(x.get("acode") or "")},
+    }
+    if kind in ("cup", "allstar"):
+        out["neutral"] = True
+    if state in ("live", "final"):
+        out["sh"], out["sa"] = sh, sa
+    if sets:
+        out["sets"] = sets
+    return out
+
+
+def collect_schedule_kovo(old):
+    season = kovo_season_code()
+    raw = kovo_game_list(season)
+    if not raw:
+        raise RuntimeError(f"KOVO 시즌 {season} 경기가 0개")
+    games = [g for g in (parse_kovo(x) for x in raw) if g]
+    new_ids = {g["gid"] for g in games}
+    has_ps = any(g["kind"] == "ps" for g in games)
+    # KOVO 정규리그 목록에 없는 것(컵대회·올스타, 대진 미정 봄배구 자리표시)은 기존 일정에서 이어 받는다.
+    for g in old.get("games", []):
+        if g["gid"] in new_ids:
+            continue
+        if g.get("kind") in ("cup", "allstar") or (g.get("kind") == "ps" and not has_ps):
+            games.append(g)
+
+    try:
+        n = save_finished_relays(games)
+        if n:
+            print(f"[OK] 지난 경기 문자중계 {n}경기 저장")
+    except Exception as e:  # noqa: BLE001
+        print("[WARN] 문자중계 저장 실패:", e)
+
+    uniq = {g["gid"]: g for g in games}
+    games = sorted(uniq.values(), key=lambda g: (g["date"], g["time"] or "99", g["home"]))
+    with_sets = sum(1 for g in games if g.get("sets"))
+    final = sum(1 for g in games if g["state"] == "final")
+    STATUS["schedule"] = f"성공 {len(games)}경기 (종료 {final}, 세트점수 {with_sets}) · KOVO"
+    print("[OK]", STATUS["schedule"])
+    changed = save("schedule.json", {"source": "한국배구연맹(KOVO)", "games": games})
+    try:
+        changed |= bool(build_player_stats(games))
+    except Exception as e:  # noqa: BLE001
+        print("[WARN] 선수 기록 집계 실패:", e)
+    return changed
+
+
+# KOVO 문자중계 코드 → 네이버 문자중계와 같은 문구 (선수 기록 집계가 이 문구를 읽는다)
+KV_ERR = {"er0": "기타범실", "er1": "아웃", "er2": "로테이션범실", "er3": "아웃", "er4": "포히트", "er5": "라인오버",
+          "er6": "터치넷", "er7": "드리블", "er8": "아웃오브포지션", "er9": "스크린", "era": "기타범실", "erb": "아웃",
+          "erc": "로테이션", "erd": "네트걸림", "ere": "포히트", "erf": "라인오버", "erg": "터치넷", "erh": "더블콘텍트",
+          "eri": "아웃오브포지션", "erj": "스크린", "erk": "캐치볼", "erl": "오버넷"}
+KV_ACT = {"VV": "서브", "VS": "스파이크서브", "AA": "오픈", "AC": "퀵오픈", "AT": "시간차", "AE": "이동공격",
+          "AQ": "속공", "AW": "백어택", "AZ": "백어택", "BB": "블록킹", "DF": "디그", "RR": "리시브", "SS": "세트"}
+KV_ETC = {"CT": "작전타임", "CY": "벌칙", "CR": "세트퇴장", "CW": "경고", "CC": "경기퇴장"}
+
+
+def kovo_play(f):
+    """feed 한 줄 → (종류, 문장)  종류: S 득점 / T 팀 실점 / X 일반 / I·O 교체 / F 시작·종료"""
+    a, res, name = f.get("raction") or "", f.get("raresult") or "", (f.get("rpname") or "").strip()
+    scored = to_int(f.get("rgrade")) == 1
+    if a == "ST":
+        return "F", "경기시작"
+    if a == "ET":
+        return "F", "경기종료"
+    if a == "CI":
+        return "I", name
+    if a == "CO":
+        return "O", name
+    if a == "OP":
+        return "S", "팀득점"
+    if a == "TO":
+        return "T", "팀실점"
+    if a in KV_ETC:
+        return "X", KV_ETC[a] if name in ("", "팀") else f"{name} {KV_ETC[a]}"
+    if a == "BA":
+        word = "블록킹 어시스트"
+    elif a == "BT":
+        word = "유효 블로킹"
+    elif a in KV_ACT:
+        word = KV_ACT[a]
+        if res in KV_ERR:
+            word += " " + KV_ERR[res]
+        elif res == "suc" and a not in ("DF", "RR", "SS"):
+            word += " 성공"
+        elif res == "exc" and a in ("RR", "SS"):
+            word += " 정확"
+        elif res == "fal":
+            word += " 실패"
+    else:
+        word = a
+    return ("S" if scored else "X"), (f"{name} {word}" if name and name != "팀" else word)
+
+
+def kovo_rt(k, rset=None):
+    params = {"season": k["s"], "round": k["r"], "gnum": k["n"], "gcode": KOVO_GCODE, "hcode": k["h"],
+              "acode": k["a"], "page": 0, "size": 10000, "sort": ["ids.rPage,ASC", "ids.rIndex,ASC"]}
+    if rset:
+        params["rset"] = rset
+    return kovo("/stat/real-time", params, tries=2)
+
+
+def compact_kovo_set(p, home_code):
+    pos = {(str(x.get("tcode")), x.get("pname")): x.get("position") or "" for x in (p.get("player") or [])}
+    lu = p.get("lineup") or {}
+    lineup = {}
+    for side, pre, code in (("home", "hp", home_code), ("away", "ap", None)):
+        lst = []
+        for i in range(1, 15):
+            n = (lu.get(f"{pre}{i}") or "").strip()
+            if not n:
+                continue
+            tc = code if side == "home" else next((t for (t, nm) in pos if nm == n and t != home_code), "")
+            lst.append({"n": n, "p": pos.get((tc, n), "") or ("L" if i >= 7 else "")})
+        lineup[side] = lst
+    rel, hs, as_ = [], 0, 0
+    for f in sorted(p.get("feed") or [], key=lambda f: (f.get("rpage") or 0, f.get("rindex") or 0)):
+        typ, text = kovo_play(f)
+        home = str(f.get("rtcode")) == home_code
+        if to_int(f.get("rgrade")) == 1:
+            if home:
+                hs += 1
+            else:
+                as_ += 1
+        rel.append([f.get("rpage") or 0, None if typ == "F" else (1 if home else 0), typ, text, hs, as_])
+    return {"lineup": lineup, "relay": rel}
+
+
+def kovo_rt_state(p):
+    """real-time 응답 → (상태, 세트스코어 홈, 원정, 세트별 점수, 진행 세트)"""
+    g = (p or {}).get("game") or {}
+    sh, sa = to_int(g.get("homeSetPoint")) or 0, to_int(g.get("awaySetPoint")) or 0
+    sets = [[to_int(g.get(f"homeS{i}Point")) or 0, to_int(g.get(f"awayS{i}Point")) or 0] for i in range(1, 6)]
+    sets = [s for s in sets if s[0] or s[1]]
+    acts = {f.get("raction") for f in (p or {}).get("feed") or []}
+    cur = to_int(g.get("setIng")) or len(sets) or 1
+    if max(sh, sa) >= 3 or "ET" in acts:
+        return "final", sh, sa, sets, cur
+    if sets or "ST" in acts:
+        return "live", sh, sa, sets, cur
+    return "scheduled", sh, sa, sets, cur
+
+
+def fetch_game_relay_kovo(g, prev=None, final=False, first=None):
+    """KOVO 문자중계 전체. 이미 받은 '끝난 세트'는 prev 에서 재사용."""
+    k = g["k"]
+    first = first or kovo_rt(k)
+    if not first:
+        return prev
+    _, _, _, _, latest = kovo_rt_state(first)
+    sets = dict((prev or {}).get("sets") or {})
+    done = (prev or {}).get("done_sets") or {}
+    for n in range(1, latest + 1):
+        key = str(n)
+        if key in sets and done.get(key) and n != latest:
+            continue
+        p = first if to_int((first.get("lineup") or {}).get("rset")) == n else kovo_rt(k, n)
+        if p:
+            sets[key] = compact_kovo_set(p, k["h"])
+    return {"gid": g["gid"], "latest": latest, "sets": sets, "final": final,
+            "done_sets": {str(n): True for n in range(1, latest + (1 if final else 0))}}
+
+
+def run_live_kovo():
+    now = now_kst()
+    today = now.date().isoformat()
+    season = kovo_season_code()
+    games = [g for g in (parse_kovo(x) for x in kovo_game_list(season) if x.get("gdate") == today) if g]
+    cache = load("live_relay_cache.json", {}) or {}
+    if cache.get("date") != today:
+        cache = {"date": today, "games": {}}
+    for g in games:
+        prev = cache["games"].get(g["gid"])
+        started = bool(g["time"]) and now >= datetime.fromisoformat(f"{today}T{g['time']}:00").replace(tzinfo=KST) - timedelta(minutes=10)
+        if not (started or g["state"] != "scheduled"):
+            continue
+        if g["state"] == "final" and (prev or {}).get("final"):
+            continue
+        p = kovo_rt(g["k"])
+        if not p:
+            continue
+        st, sh, sa, sets, cur = kovo_rt_state(p)
+        if st != "scheduled":
+            g["state"], g["sh"], g["sa"] = st, sh, sa
+            g["status"] = "경기 종료" if st == "final" else f"{cur}세트"
+            if sets:
+                g["sets"] = sets
+            try:
+                cache["games"][g["gid"]] = fetch_game_relay_kovo(g, prev, final=st == "final", first=p)
+            except Exception as e:  # noqa: BLE001
+                print("[WARN] relay", g["gid"], e)
+    save("live_relay_cache.json", cache)
+    relay = {gid: {k: v for k, v in r.items() if k != "done_sets"} for gid, r in cache["games"].items() if r}
+    out = {"date": today, "updated_at": now.strftime("%Y-%m-%d %H:%M:%S"), "source": "KOVO",
+           "games": [{k: v for k, v in g.items() if k != "k"} for g in games], "relay": relay}
+    save("live.json", out)
+    for g in games:
+        r = relay.get(g["gid"]) or {}
+        n = sum(len(x.get("relay", [])) for x in (r.get("sets") or {}).values())
+        print(f"  {g['time']} {g['away']} {g.get('sa', '-')}:{g.get('sh', '-')} {g['home']} [{g['state']}] {g.get('status', '')} sets={g.get('sets')} relay={n}")
+
+    pending = [g for g in games if g["state"] not in ("final", "cancel")]
+    if not pending:
+        print("STOP")
+        return
+    if any(g["state"] == "live" for g in pending):
+        print("CONTINUE")
+        return
+    soon = any(not g["time"] or datetime.fromisoformat(f"{today}T{g['time']}:00").replace(tzinfo=KST) - now <= timedelta(minutes=40)
+               for g in pending)
+    print("CONTINUE" if soon else "STOP")
+
+
 # ---------------------------------------------------------------- 생중계 링크
 def stream_info(det):
     """경기 상세 응답에서 치지직 생중계 채널을 찾는다."""
@@ -810,6 +1078,10 @@ def stream_info(det):
 # ---------------------------------------------------------------- 실시간 (경기 중)
 def run_live():
     """오늘 경기만 받아 data/live.json 에 쓴다. 마지막 줄에 CONTINUE / STOP 출력."""
+    try:
+        return run_live_kovo()
+    except Exception as e:  # noqa: BLE001
+        print("[WARN] KOVO 실시간 실패, 네이버로 재시도:", e)
     now = now_kst()
     today = now.date()
     try:
