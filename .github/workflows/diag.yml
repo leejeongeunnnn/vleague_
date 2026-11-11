@@ -1,0 +1,24 @@
+name: diag-net
+on:
+  push:
+    branches: [diag-net]
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - run: |
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+          Q="schedule/games?fields=basic&upperCategoryId=volleyball&categoryId=kovo&fromDate=2026-11-11&toDate=2026-11-11"
+          echo "== dns"; getent ahosts api-gw.sports.naver.com | head; curl -s -m 8 https://ipinfo.io/json || true
+          t(){ echo "== $1"; shift; curl -sS -m 20 -o /tmp/o -w "code=%{http_code} t=%{time_total} ip=%{remote_ip}\n" "$@"; head -c 300 /tmp/o; echo; }
+          t naver4 -4 -A "$UA" -H "Referer: https://m.sports.naver.com/" "https://api-gw.sports.naver.com/$Q"
+          t naver6 -6 -A "$UA" "https://api-gw.sports.naver.com/$Q"
+          t naver_noua "https://api-gw.sports.naver.com/$Q"
+          t naver_http1 --http1.1 -A "$UA" "https://api-gw.sports.naver.com/$Q"
+          t msports -A "$UA" "https://m.sports.naver.com/volleyball/schedule/index?category=kovo"
+          t naver_main -A "$UA" "https://www.naver.com/"
+          t kovo_teams -A "$UA" -H "Origin: https://www.kovo.co.kr" -H "Referer: https://www.kovo.co.kr/" "https://api.kovo.co.kr/teams"
+          t kovo_site -A "$UA" "https://www.kovo.co.kr/"
+          t daum -A "$UA" "https://sports.daum.net/schedule/volleyball"
+          t daum_api -A "$UA" -H "Referer: https://sports.daum.net/" "https://sports.daum.net/prx/hermes/api/game/schedule.json?page=1&leagueCode=kovo_m&seasonKey=20262027&fromDate=20261111&toDate=20261111"
