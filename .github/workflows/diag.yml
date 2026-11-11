@@ -4,13 +4,15 @@ on:
     branches: [diag-net]
 jobs:
   d:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - shell: bash {0}
         run: |
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
-          mkdir -p o && cd o
+          mkdir -p /home/runner/o && cd /home/runner/o
           curl -sSL -A "$UA" https://www.kovo.co.kr/ -o index.html
           grep -oE '(src|href)="[^"]+\.js[^"]*"' index.html | head -40
           for u in $(grep -oE '(src|href)="[^"]+\.js[^"]*"' index.html | sed -E 's/.*="([^"]+)"/\1/'); do
@@ -21,7 +23,6 @@ jobs:
           for u in $(grep -oE '/_next/static/[^"]+\.js' all.js index.html | sed 's/^[^:]*://' | sort -u | head -300); do curl -sSL -A "$UA" "https://www.kovo.co.kr$u" >> all.js; echo >> all.js; done
           for u in $(grep -oE 'static/chunks/[A-Za-z0-9_./-]+\.js' all.js | sort -u | head -400); do curl -sSL -A "$UA" "https://www.kovo.co.kr/_next/$u" >> all.js; echo >> all.js; done
           wc -c all.js
-      - uses: actions/upload-artifact@v4
-        with:
-          name: kovojs
-          path: o/
+          cd /tmp && mkdir pub && cp /home/runner/o/all.js pub/
+          cd pub && git init -q -b diag-out && git add . && git -c user.name=b -c user.email=b@x commit -qm out
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" diag-out:diag-out
