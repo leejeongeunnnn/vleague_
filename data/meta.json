@@ -1,8 +1,9 @@
 {
- "updated_at_kst": "2026-11-11 20:53",
+ "updated_at_kst": "2026-11-11 23:33",
  "season": "2026-27",
  "status": {
-  "schedule": "실패 — 기존 일정 유지: 2026-10-14~2026-11-13: HTTPSConnectionPool(host='api-gw.sports.naver.com', port=443): Read timed out. (read timeout=15)",
+  "schedule": "성공 147경기 (종료 22, 세트점수 22) · KOVO",
+  "players": "정규리그 8경기 · 96명",
   "news": "성공 40건"
  }
 }
