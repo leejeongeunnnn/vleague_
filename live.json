@@ -1,0 +1,20 @@
+{
+ "date": "2026-11-15",
+ "updated_at": "2026-11-15 01:37:55",
+ "source": "KOVO",
+ "games": [
+  {
+   "gid": "20261115023M27",
+   "date": "2026-11-15",
+   "time": "14:00",
+   "kind": "regular",
+   "series": "",
+   "home": "우리카드",
+   "away": "현대캐피탈",
+   "venue": "서울장충체육관",
+   "state": "scheduled",
+   "status": ""
+  }
+ ],
+ "relay": {}
+}
