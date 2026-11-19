@@ -1,6 +1,37 @@
 {
  "items": [
   {
+   "title": "삼성화재, 우리카드 3-0 완파…왕빈 22점·3위 도약",
+   "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1jS0RhQWEtbEhHamNCdmpKZHRBQzdsZTRtcDQ3Yk9XR0hwMl8xNmFyMzJHR0tZRTZtdTkxV0ZQcGtHX0hXbmRfVWNING5OeXM1SzFYd1p1N1lkVGs5dDVFT2liRVRBOTd1cnEtdUZqaEtUS2Ji?oc=5",
+   "source": "이투데이",
+   "time": "11/19 09:25",
+   "ts": 1795047900.0,
+   "teams": [
+    "우리카드",
+    "삼성화재"
+   ]
+  },
+  {
+   "title": "3경기 뛰고 결국 수술대에, 우리카드 아라우조 교체 확정",
+   "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBpdzM2VlNMakZZSlFlMS1CZDFzY0RuTHNhTWhyWFNFb2RPRlBMTWdCX2dZX2ljQUtrN3JBLUlLY2RiRHNYelBzeTduSHlNYlFWc0dPZTliakRsR1k?oc=5",
+   "source": "일간스포츠",
+   "time": "11/19 06:59",
+   "ts": 1795039140.0,
+   "teams": [
+    "우리카드"
+   ]
+  },
+  {
+   "title": "'잘 데려왔네' 브라질+중국 쌍포 34점 미쳤다, 꼴찌팀 승승→3위 실화인가…'브라질 특급 전격 아웃' 우리카드 위기 닥쳤다",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1BVlNBOXVibzgyYllIaWxQVjk3U0ZUSFREYXY3TE5icmNWckUtTTAyWEpFc0JxNHBxZXppaEtTaV9yNzJBUkRiYXd3enNZSGJKSFlrUXowcWFvOUdTXzFVSQ?oc=5",
+   "source": "마이데일리",
+   "time": "11/19 00:01",
+   "ts": 1795014060.0,
+   "teams": [
+    "우리카드"
+   ]
+  },
+  {
    "title": "‘왕빈·호키 34점 합작’ 삼성화재, 아라우조 빠진 우리카드에 완승…현대건설은 SOOP 꺾고 첫 승 신고",
    "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFA2NEFoUkRGWlRMRnEwZXBpVjZaNVhaM3kxYXBkZkxtYjlheEdKMklaMWwzVWJMV291S0RHUklFSF9HX2NnY0kteW1mNDloTXBvMlhnQnFHSzVybG9jN3fSAWNBVV95cUxOLTZmQmlUS3kwRGpYRjF6WjhGdVgxeEpnRnJZcUVnU0Jmbkk3Ri00ZTlMYV8ydUZzeXY1RmR4ckdTenlXa1dWdEFwY0JMMWdxR0J2cEMybkR6VS1OQTJ6YUJad2s?oc=5",
    "source": "스포츠경향",
@@ -61,6 +92,17 @@
    "source": "톱스타뉴스",
    "time": "11/18 21:20",
    "ts": 1795004453.0,
+   "teams": [
+    "우리카드",
+    "삼성화재"
+   ]
+  },
+  {
+   "title": "'왕빈 22점·1세트 21-24 대역전극' 삼성화재, 외인 빠진 우리카드 3-0 완파 3위 도약… 여자부 현대건설 개막 4연패 끝 시즌 첫 승",
+   "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE93d1puQ2l3Tm55Q0dLY09EMXkzanRodVA3YjQ2dmc5SGZVeHk3aFhDaUVKQVVTbXNSQlhFSlk1N0FlblIxSWEyNTNYNmM1ZXotZXdfZ0UwM3RtNDJ0RXNuQm93VUdfVDRDaGtmaks0bWF6NUJCTl9uQ3Z3Y9IBf0FVX3lxTE9XbUwwajZub2puSjBZRzJWN1NuYzVkUDNFZFNKcFd0bElFY091YXFYaDJFZzg2Z2YwMDc5MUk5dVp6aEoyVE9GWkhtbjlJcmY3QmZ0YW9tMkNYX2NYZVQ4elZ5eFlUcjhVNm5IWHF6Rlc4TGFsREhFLTducFR0UEE?oc=5",
+   "source": "데일리스포츠한국",
+   "time": "11/18 21:20",
+   "ts": 1795004440.0,
    "teams": [
     "우리카드",
     "삼성화재"
@@ -368,55 +410,12 @@
   },
   {
    "title": "'4연승' 석진욱 한국전력 감독 \"교체 선수들 활약…칭찬하고파\"",
-   "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE43MjZ6R21WNjBSR2ZGVGNHeXgwZFpwZjlpRjJPMUNsd2RiNjYySEhibmRWUkNNUDk3ZHptQk5WMEVZN3gyemRTdlVCMmtMakhuOXYwV1ZGRGgwcjTSAWBBVV95cUxOd3lfa2kzWG5xekx6OTFCbzZTWE9BV3FTUTktcHlwTW1tRmhtNWxjSDhvaERNbFRlRllNVjhObTRsU3h6MTRXRzg5TmRlcDg4YmNOVmNJUWlLRmpxemtvaVc?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE53eV9raTNYbnF6THo5MUJvNlNYT0FXcVNROS1weXBNbW1GaG01bGNIOG9oRE1sVGVGWU1WOE5tNGxTeHoxNFdHODlOZGVwODhiY05WY0lRaUtGanF6a29pV9IBYEFVX3lxTE53eV9raTNYbnF6THo5MUJvNlNYT0FXcVNROS1weXBNbW1GaG01bGNIOG9oRE1sVGVGWU1WOE5tNGxTeHoxNFdHODlOZGVwODhiY05WY0lRaUtGanF6a29pVw?oc=5",
    "source": "연합뉴스",
    "time": "11/17 22:29",
    "ts": 1794922176.0,
    "teams": [
     "한국전력"
-   ]
-  },
-  {
-   "title": "쇼·우스만 56점 합작 한국전력, 4연승 신바람 OK저축은행에게 풀세트 접전 승리 [MD수원]",
-   "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1MNk9MWmpRVTBoUWJSRkZaVURTeGlmdVNVa0t2MDFkd1hjb1IwLTNkWXR4UjNJSDVuTEttUW1RNlAxdGlkeEsxeDB3NXV6bEZOT2llNTRMWjBWUUVpeEdudVZmSEpIQQ?oc=5",
-   "source": "마이데일리",
-   "time": "11/17 22:14",
-   "ts": 1794921253.0,
-   "teams": [
-    "한국전력",
-    "OK저축은행"
-   ]
-  },
-  {
-   "title": "한국전력, 쇼 34점 ‘폭발쇼’로 OK저축은행에 신승",
-   "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9vY1lKR0QyOUV4Y01DLUxIZWJ1SGdKUE5NTGZ1cW51RUJ4LXRPZUVVOG13UVpicjJuVzZQdzZlWmlYYW1RUXdjWVgyR1d4bDVWRmg2eXFTeGhSNVVCTi0ydy1BYVdJeEZoNHk0Tllhdw?oc=5",
-   "source": "STN SPORTS",
-   "time": "11/17 22:12",
-   "ts": 1794921172.0,
-   "teams": [
-    "한국전력",
-    "OK저축은행"
-   ]
-  },
-  {
-   "title": "한전, '감독 사퇴' OK저축 꺾고 4연승…정관장, 기업은행 5연승 저지(종합)",
-   "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE1NMlRJUjVWVWE2aUNWZzJ5U0VYbTljd3dhUXZCMHcyNGdtQlhieUxIQzRpSTZLMnFZRWU2RnB3STh0b1ZoY1pGVU5MVmg3TWFsMWx2ME9jY3ZodDJmOUxORVFNSnUwSEpuVzVzZ2N1LTJIeGhsVzlRctIBeEFVX3lxTE1NMlRJUjVWVWE2aUNWZzJ5U0VYbTljd3dhUXZCMHcyNGdtQlhieUxIQzRpSTZLMnFZRWU2RnB3STh0b1ZoY1pGVU5MVmg3TWFsMWx2ME9jY3ZodDJmOUxORVFNSnUwSEpuVzVzZ2N1LTJIeGhsVzlRcg?oc=5",
-   "source": "뉴시스",
-   "time": "11/17 22:02",
-   "ts": 1794920577.0,
-   "teams": [
-    "한국전력"
-   ]
-  },
-  {
-   "title": "'쇼 34점·우스만 22점 폭발' 한국전력, '감독 사퇴' OK저축은행 3-2 제압하고 4연승 질주… 여자부 정관장은 IBK기업은행 개막 5연승 저지",
-   "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE9mbjJVTGtpcEk1SGtGSDdZZjQ5ZHhJeDFYc3hxWUhyV2tqOWp6UFlYWGtuX2ZieGdNMVQ0LS1GRzk0RDUxNVBMeWJZenhsSnZkTHR3WmtrQ1RvRnlOekEtellVV3RrT01QN3hpdUdEX0YzYXloRjRlaTEzY9IBf0FVX3lxTE1xVEN6ZUY1RzRTWlZnbnpCaXh0NU5DNndCRm8xMXJFd0dWSmFTekpRLUdKWldHZGJrWm84QUNObGh3VDFLQnZZdkRYZE9EU3g4aUtLcWlqdmo5Q1I5cDU5OUZna1dkX29td1RZQ0FHRlRHd3R6NlpSZ0luSk01QlE?oc=5",
-   "source": "데일리스포츠한국",
-   "time": "11/17 22:01",
-   "ts": 1794920464.0,
-   "teams": [
-    "한국전력",
-    "OK저축은행"
    ]
   }
  ]
