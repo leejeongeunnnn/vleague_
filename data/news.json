@@ -1,21 +1,19 @@
 {
  "items": [
   {
+   "title": "임명옥, 여오현 넘어 프로배구 최다 출전",
+   "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1FcnVDZ1h2eWpLSjUyelIyOWdXRVJhMkFjbndIOUFMXzg4dWZYdDlleUpQZFZvVFJBWWFkSXlPNGw2cjJrM0RCUlVieFgzQ2ZLVnRMVkhzNzdoWS1Hckp2M0pZX0NFUdIBZkFVX3lxTE1FcnVDZ1h2eWpLSjUyelIyOWdXRVJhMkFjbndIOUFMXzg4dWZYdDlleUpQZFZvVFJBWWFkSXlPNGw2cjJrM0RCUlVieFgzQ2ZLVnRMVkhzNzdoWS1Hckp2M0pZX0NFUQ?oc=5",
+   "source": "동아일보",
+   "time": "11/21 01:40",
+   "ts": 1795192800.0,
+   "teams": []
+  },
+  {
    "title": "우스만·쇼 45점 합작…한국전력 5연승 질주",
-   "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE40OHU0M0hvSldLaUNocGlObkZvZ0t2NlM2YXlzV0tIVkxnUm80X0ZHX2JlbVM2Rk1GR19UM0Zicy1sM0N6Z1d0RDk2QjV5VWViczFsam1YWFBJRm_SAWBBVV95cUxOU1Rpa0xGeWthRVE1ZUtGdDYxXy10Ujh4Qzc2V183aDdBazB0UW5VUy1jeHRMaGxoUGpWRE1LX0h5dDNpUFJRbU00WHF6d1dzU0x4YkJodmRzUVhDWk5NYm4?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5TVGlrTEZ5a2FFUTVlS0Z0NjFfLXRSOHhDNzZXXzdoN0FrMHRRblVTLWN4dExobGhQalZETUtfSHl0M2lQUlFtTTRYcXp3V3NTTHhiQmh2ZHNRWENaTk1ibtIBYEFVX3lxTE5TVGlrTEZ5a2FFUTVlS0Z0NjFfLXRSOHhDNzZXXzdoN0FrMHRRblVTLWN4dExobGhQalZETUtfSHl0M2lQUlFtTTRYcXp3V3NTTHhiQmh2ZHNRWENaTk1ibg?oc=5",
    "source": "연합뉴스",
    "time": "11/20 23:25",
    "ts": 1795184753.0,
-   "teams": [
-    "한국전력"
-   ]
-  },
-  {
-   "title": "‘높이 압도→우스만·쇼 45득점 합작’ 한국전력, 5년만 1위로 1R 마감…女도로공사 5연승+선두 도약",
-   "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1DVmRvcEhMUkNWdHBqQW9PMTFLNVBTbm1HTlhnRzBBdzY2QVk0MEhtM21Wb0kyS2VPTXJmSGVSSWdZNzhBdzdpYW5jamZfb1NmZVZjcnBjb0s?oc=5",
-   "source": "스포츠서울",
-   "time": "11/20 22:58",
-   "ts": 1795183121.0,
    "teams": [
     "한국전력"
    ]
@@ -50,12 +48,13 @@
    ]
   },
   {
-   "title": "'우스만·쇼'...한국전력, 5년 만에 라운드 1위",
-   "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1nOHZzZUZaN1JsU1NfdEJrdTRYd2JKWWZCZzdGS2Jpb0VtZmtfNGhmTGpYc0NXN3pNNjMwUnVvdVJFTFhmVFFjMllvT0ItR0ZnS280Zi14WTdkVlpRV2c?oc=5",
-   "source": "YTN",
-   "time": "11/20 22:16",
-   "ts": 1795180560.0,
+   "title": "한국전력, '난적' 현대캐피탈 꺾고 5년 만에 1라운드 1위…여자부 도로공사도 5연승 선두 도약",
+   "link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE1fS1d0REpEeFhqUzVJYVFtSXVuZS1EV0FTc25RbV9BWndNR2xvSDY3OHJvWnduOXUzbTBiRDliRW1VTDNyVmpfQ1VkdTk4Y200Wl90UEZpTUhab3c4M3hqYk1QN0I3dVFJVUtMRTRHdDVfZk5qdVM2NmQ5cmRyS03SAX9BVV95cUxNX0tXdERKRHhYalM1SWFRbUl1bmUtRFdBU3NuUW1fQVp3TUdsb0g2Nzhyb1p3bjl1M20wYkQ5YkVtVUwzclZqX0NVZHU5OGNtNFpfdFBGaU1IWm93ODN4amJNUDdCN3VRSVVLTEU0R3Q1X2ZOanVTNjZkOXJkcktN?oc=5",
+   "source": "데일리스포츠한국",
+   "time": "11/20 22:13",
+   "ts": 1795180411.0,
    "teams": [
+    "현대캐피탈",
     "한국전력"
    ]
   },
@@ -65,6 +64,16 @@
    "source": "뉴시스",
    "time": "11/20 22:08",
    "ts": 1795180097.0,
+   "teams": [
+    "한국전력"
+   ]
+  },
+  {
+   "title": "'우스만·쇼 45점 합작' 한국전력 5연승...5년 만에 1위로1R마무리",
+   "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1aSFhnemcxbTVXRnBPSG9yMldPdTJzRU1Vc3BPYWdfNWN6eEZTRWw0aDlzZVh2VlA2ak12VlV5QkdyMHZ5ZVEzbl91V0RIYmcwclAwbG1uMFZadjZDZW1DR1VDSG9FdFpGZUp5dW11c3g5dzTSAXNBVV95cUxNWkhYZ3pnMW01V0ZwT0hvcjJXT3Uyc0VNVXNwT2FnXzVjenhGU0VsNGg5c2VYdlZQNmpNdlZVeUJHcjB2eWVRM25fdVdESGJnMHJQMGxtbjBWWnY2Q2VtQ0dVQ0hvRXRaRmVKeXVtdXN4OXc0?oc=5",
+   "source": "한국일보",
+   "time": "11/20 21:53",
+   "ts": 1795179180.0,
    "teams": [
     "한국전력"
    ]
@@ -110,7 +119,7 @@
   },
   {
    "title": "남자배구 한국전력, 현대 꺾고 5년 만에 1위로 1라운드 마쳐",
-   "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5FeDlFcDZ5bU1kamJyWTlCclJKYVhPS2Nxd0o0eG5nNDM1Mkk2eWxHbFBDQzZlNHI1Tk5sWGt4WHZRNFN1VWppdWtNbmdVR0VnVnZhMmxqeDF3WlU?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5FeDlFcDZ5bU1kamJyWTlCclJKYVhPS2Nxd0o0eG5nNDM1Mkk2eWxHbFBDQzZlNHI1Tk5sWGt4WHZRNFN1VWppdWtNbmdVR0VnVnZhMmxqeDF3WlXSAWBBVV95cUxNbWEtR2tEeTlCUV9pMVozejVZQ1JVd1R4UzNUX2FWQ2pPQVRfYW9sMGxrRlg5QVdlbTYzRGUzVjQ3cFRsQVcyN09ibnhsSEdUVVVxbGdoRVYzR3BUSXEwazE?oc=5",
    "source": "연합뉴스",
    "time": "11/20 21:32",
    "ts": 1795177932.0,
@@ -187,7 +196,7 @@
   },
   {
    "title": "\"감독님부터 야전사령관까지, 꼭 이기고 싶었는데…지고 대미지 컸다\" 우승팀 캡틴 솔직고백, 왜 삼성화재전 승리가 간절했나",
-   "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBfWU0wVmNpc2xQUmZNWXRSQWxGcjF1bE1GQkM4eS1kVjlyQ19lcV9IZjJXaXdrOVRkUm5zdmNrRG51czlQTXA0WEhZNWF6WjEtckxnNHBrbHZRZHNyMWUzakphemszdw?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5PUTcwM0tiZEdDdU4yVmZxLW9mTVRMRURkZkZfNU9UQndmMlR2OE4zamZQeGczOTI0NXI3Ykc0eC10ZGpEbkNsRVZEeG5JQ3RuZFVvdE5BcHpJbnhEclpJbg?oc=5",
    "source": "마이데일리",
    "time": "11/20 16:41",
    "ts": 1795160460.0,
@@ -213,10 +222,10 @@
   },
   {
    "title": "\"아내 경기장 방문 때문에 힘난 건 아닙니다\" 한국전력 쇼의 웃음 [MD수원]",
-   "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBNYXBzbzBxNWR2YkVhV1FoSzRCMnl5dkxZeGpYN0NlYUIyOW1kRWN4a1hpM19oUUx5eVY3YVFhRi1UTnpMX1FDSEtjUnEtQjYyZmxyQzhhZkw3YWpBNkVKRlJ2cXlrZw?oc=5",
-   "source": "마이데일리",
-   "time": "11/20 14:09",
-   "ts": 1795151357.0,
+   "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFA3bXpJODBxUzJIdkdjMWRRX1FoQlZla1piaXpBY3o5ZWNuN1FCLWlUUWNGSUUyY0VsTHF2ZnJ3cG5sTGxYVzB6UDZMcmx0X05iWXdid1Rn?oc=5",
+   "source": "네이트",
+   "time": "11/20 14:10",
+   "ts": 1795151400.0,
    "teams": [
     "한국전력"
    ]
@@ -362,14 +371,6 @@
     "현대캐피탈",
     "한국전력"
    ]
-  },
-  {
-   "title": "프로배구 관중, 경기 중 쓰러져 사망",
-   "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1ZYXZqVUg2VE5VY1J1ckxoSk9wUWFFa3JOc0JSYXpjS1ZiWHVQVnIxMU9lc2NmTVVzOExvd2Q1Y0NfZXdMOEJ1U0xQbjVsVHI3NkdtTmptNzlVMFoxRlNxOTM5cDlTQ2hZSkxYQ2FB?oc=5",
-   "source": "전국매일신문",
-   "time": "11/20 09:55",
-   "ts": 1795136129.0,
-   "teams": []
   }
  ]
 }
