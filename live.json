@@ -1,0 +1,20 @@
+{
+ "date": "2026-11-29",
+ "updated_at": "2026-11-29 04:09:29",
+ "source": "KOVO",
+ "games": [
+  {
+   "gid": "20261129023M51",
+   "date": "2026-11-29",
+   "time": "14:00",
+   "kind": "regular",
+   "series": "",
+   "home": "삼성화재",
+   "away": "현대캐피탈",
+   "venue": "대전충무체육관",
+   "state": "scheduled",
+   "status": ""
+  }
+ ],
+ "relay": {}
+}
